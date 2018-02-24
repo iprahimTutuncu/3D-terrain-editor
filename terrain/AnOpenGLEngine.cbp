@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="AnOpenGLEngine" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/AnOpenGLEngine" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++14" />
+					<Add option="-g" />
+					<Add directory="scenes" />
+					<Add directory="ECS/Systems" />
+					<Add directory="ressourceManager" />
+					<Add directory="graphics" />
+					<Add directory="core" />
+				</Compiler>
+				<Linker>
+					<Add library="sfml-graphics" />
+					<Add library="sfml-window" />
+					<Add library="sfml-system" />
+					<Add library="GLEW" />
+					<Add library="GL" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/AnOpenGLEngine" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++14" />
+					<Add directory="scenes" />
+					<Add directory="ECS/Systems" />
+					<Add directory="ressourceManager" />
+					<Add directory="graphics" />
+					<Add directory="core" />
+				</Compiler>
+				<Linker>
+					<Add library="sfml-graphics" />
+					<Add library="sfml-window" />
+					<Add library="sfml-system" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-Wall" />
+			<Add option="-std=c++14" />
+		</Compiler>
+		<Linker>
+			<Add library="GL" />
+			<Add library="GLEW" />
+			<Add library="assimp" />
+		</Linker>
+		<Unit filename="Game.cpp" />
+		<Unit filename="Game.h" />
+		<Unit filename="core/CollisionHandler.cpp" />
+		<Unit filename="core/CollisionHandler.h" />
+		<Unit filename="core/MouseRay.cpp" />
+		<Unit filename="core/MouseRay.h" />
+		<Unit filename="core/SceneComponent.cpp" />
+		<Unit filename="core/SceneComponent.h" />
+		<Unit filename="core/SceneManager.cpp" />
+		<Unit filename="core/SceneManager.h" />
+		<Unit filename="core/SceneNode.cpp" />
+		<Unit filename="core/SceneNode.h" />
+		<Unit filename="core/Terrain.cpp" />
+		<Unit filename="core/Terrain.h" />
+		<Unit filename="graphics/Camera.cpp" />
+		<Unit filename="graphics/Camera.h" />
+		<Unit filename="graphics/CubeMap.cpp" />
+		<Unit filename="graphics/CubeMap.h" />
+		<Unit filename="graphics/FrameBuffer.cpp" />
+		<Unit filename="graphics/FrameBuffer.h" />
+		<Unit filename="graphics/Grid.cpp" />
+		<Unit filename="graphics/Grid.h" />
+		<Unit filename="graphics/Line3D.cpp" />
+		<Unit filename="graphics/Line3D.h" />
+		<Unit filename="graphics/Material.h" />
+		<Unit filename="graphics/Mesh.cpp" />
+		<Unit filename="graphics/Mesh.h" />
+		<Unit filename="graphics/Model.cpp" />
+		<Unit filename="graphics/Model.h" />
+		<Unit filename="graphics/PostProcess.cpp" />
+		<Unit filename="graphics/PostProcess.h" />
+		<Unit filename="graphics/Renderer.cpp" />
+		<Unit filename="graphics/Renderer.h" />
+		<Unit filename="graphics/Shader.cpp" />
+		<Unit filename="graphics/Shader.h" />
+		<Unit filename="graphics/Shadow.cpp" />
+		<Unit filename="graphics/Shadow.h" />
+		<Unit filename="graphics/light/DirectionalLight.cpp" />
+		<Unit filename="graphics/light/DirectionalLight.h" />
+		<Unit filename="graphics/light/Light.h" />
+		<Unit filename="graphics/light/PointLight.cpp" />
+		<Unit filename="graphics/light/PointLight.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="media/shader/Untitled1" />
+		<Unit filename="media/shader/depthBased/depthBased.frag" />
+		<Unit filename="media/shader/depthBased/depthBased.vert" />
+		<Unit filename="media/shader/flatNoLight/flatNoLight.frag" />
+		<Unit filename="media/shader/flatNoLight/flatNoLight.vert" />
+		<Unit filename="media/shader/light/light.frag" />
+		<Unit filename="media/shader/light/light.vert" />
+		<Unit filename="media/shader/outlineModel/outlineModel.frag" />
+		<Unit filename="media/shader/outlineModel/outlineModel.vert" />
+		<Unit filename="media/shader/postProcess/postProcess.frag" />
+		<Unit filename="media/shader/postProcess/postProcess.vert" />
+		<Unit filename="media/shader/shadowMap/shadowMap.frag" />
+		<Unit filename="media/shader/shadowMap/shadowMap.vert" />
+		<Unit filename="media/shader/skybox/skybox.frag" />
+		<Unit filename="media/shader/skybox/skybox.vert" />
+		<Unit filename="ressourceManager/ShaderManager.cpp" />
+		<Unit filename="ressourceManager/ShaderManager.h" />
+		<Unit filename="ressourceManager/TextureManager.cpp" />
+		<Unit filename="ressourceManager/TextureManager.h" />
+		<Unit filename="states/BaseState.h" />
+		<Unit filename="states/GameState.cpp" />
+		<Unit filename="states/GameState.h" />
+		<Unit filename="states/MainMenuState.cpp" />
+		<Unit filename="states/MainMenuState.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="2" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
