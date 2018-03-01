@@ -12,6 +12,7 @@ void Grid::init(int gridSize, float tileSize)
     positions.resize(gridSize * gridSize);
     indices.resize(gridSize*gridSize*6);
     this->gridSize = gridSize;
+    this->tileSize = tileSize;
 
     for(int x = 0; x < gridSize; x++)
         for(int z = 0; z < gridSize; z++)
@@ -35,7 +36,7 @@ void Grid::init(int gridSize, float tileSize)
     std::vector<Vertex> vertices;
     glm::vec3 normal(0.0, 1.0, 0.0);
     for(glm::vec3 &pos: positions)
-        vertices.emplace_back(Vertex(pos, glm::vec2(0,0), normal));
+        vertices.emplace_back(Vertex(pos, glm::normalize(glm::vec2(pos.x, pos.z) * glm::vec2(0.5)) - glm::vec2(0.5), normal));
 
     std::vector<Texture> textures;
 
@@ -64,6 +65,20 @@ glm::vec3 Grid::getPosition(int i, int j)
     return positions[i * this->gridSize + j];
 }
 
+int Grid::getGrideSize()
+{
+    return gridSize;
+}
+
+float Grid::getTileSize()
+{
+    return tileSize;
+}
+
+float Grid::getSize()
+{
+    return gridSize * tileSize;
+}
 
 
 void Grid::draw(Shader& shader)

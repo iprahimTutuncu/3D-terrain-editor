@@ -7,15 +7,16 @@ using namespace std;
 
 GameState::GameState(Game* parent)
 :renderer((float) parent->getWidth(),(float) parent->getHeight()),
-    collisionHandler(camera)
+ collisionHandler(camera),
+ heightMap("media/texture/testHM.png")
 {
     this->parent = parent;
 
     sceneManager.init(parent->getWidth(), parent->getHeight());
 
-    std::shared_ptr<DirectionalLight> d1 = sceneManager.makeDirectionalLight();
-    d1->setDirection(glm::vec3(-2.0,2.0,-1.0));
-    d1->enable(true);
+    sun = sceneManager.makeDirectionalLight();
+    sun->setDirection(glm::vec3(0.0,1.0,0));
+    sun->enable(true);
     camera = sceneManager.getCamera();
 
     std::shared_ptr<PointLight> p1 = sceneManager.createPointLight();
@@ -25,21 +26,24 @@ GameState::GameState(Game* parent)
     std::shared_ptr<Model> m2 = sceneManager.createModel("media/models/bunny/bunny.obj");
     line3D = sceneManager.createLine3D(glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,2.0,0.0), glm::vec3(1.0,0.0,0.0));
 
-    grid = sceneManager.createGrid(500, 1.0);
+    grid = sceneManager.createGrid(100, 1.0);
     cursorLight = sceneManager.createPointLight();
+    cursorLight->setAmbientColor(glm::vec3(1.0,0.0,1.0));
+    cursorLight->setDiffuseColor(glm::vec3(1.0,0.0,1.0));
+    cursorLight->setSpecularColor(glm::vec3(1.0,0.0,1.0));
 
     std::shared_ptr<SceneNode> n = sceneManager.createNode();
     std::shared_ptr<SceneNode> n2 = sceneManager.createNode();
     std::shared_ptr<SceneNode> n3 = sceneManager.createNode();
 
-    n->addComponent(m1);
-    n->addComponent(p1);
+    //n->addComponent(m1);
+    //n->addComponent(p1);
     n->addComponent(grid);
-    n->setScale(glm::vec3(0.2, 0.2, 0.2));
+    //n->setScale(glm::vec3(0.2, 0.2, 0.2));
     n->setPosition(glm::vec3(0.0,0.0,0.0));
 
     n3->addComponent(m2);
-    n3->addComponent(p2);
+    //n3->addComponent(p2);
     n3->setPosition(glm::vec3(10.0,2.0,0.0));
 
     n2->addComponent(cursorLight);
@@ -62,7 +66,7 @@ GameState::GameState(Game* parent)
 
     //renderer.setPostProcessMode(PostProcessMode::GRAY_SCALE);
     renderer.setRenderMode(RenderMode::FILL);
-
+    renderer.setHeightMapTextureID(heightMap.getTextureID());
     mouseRay.init(camera);
 
 }
@@ -97,6 +101,19 @@ void GameState::event()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
         camera->turn(1);
     }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::E)){
+
+        int x = cursorLight->getLightProperties().position.x * heightMap.getSize().x;
+        x /= grid->getSize();
+        x+=heightMap.getSize().x/2;
+        int z = cursorLight->getLightProperties().position.z * heightMap.getSize().y;
+        z /= grid->getSize();
+        z+=heightMap.getSize().y/2;
+        std::cout << "x: " << x << ", y: " << z << std::endl;
+        heightMap.addCircle(10.0f, x, z,0.022, 0.0022);
+
+    }
+
 
 
 
@@ -111,9 +128,7 @@ void GameState::update(const sf::Time& deltaTime)
     counter++;
 
     renderer.update(deltaTime);
-    std::cout << glm::to_string(mouseRay.getCurrRay()) << "le cursor point" << std::endl;
-    std::cout << glm::to_string(camera->getPosition()) << "origine" << std::endl;
-    //std::cout << glm::to_string(cursorLight->getLightProperties().position) << "le cursor lumiere est sur" << std::endl;
+
     glm::vec3 intersection;
     glm::vec3 beginPos = camera->getPosition() - glm::normalize(camera->getFront());
     line3D->setBeginPoint( beginPos);
@@ -121,18 +136,17 @@ void GameState::update(const sf::Time& deltaTime)
     glm::vec3 endPos = beginPos - 100.0f * glm::normalize(camera->getFront()) ;
     line3D->setEndPoint(endPos);
 
-
     collisionHandler.setRayDirection(endPos);
     collisionHandler.setRayOrigin(beginPos);
     collisionHandler.setRayLength(100.0);
     collisionHandler.setGrid(grid);
 
+    static float t = 0.001;
+    t+=0.01;
+    sun->setDirection(glm::vec3(2.0, 1.0, 0.0));
     if(collisionHandler.isRayOnTerrain(intersection)){
-        std::cout << "wew" << std::endl;
         cursorLight->setPosition(intersection);
     }
-
-    std::cout << glm::to_string(intersection) << " intersection" << std::endl;
 }
 
 void GameState::draw()

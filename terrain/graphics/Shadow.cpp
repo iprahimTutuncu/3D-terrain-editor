@@ -231,7 +231,6 @@ void Shadow::drawShadow(Model& model, glm::mat4 modelTransform)
     model.Draw(*p_shaderShadowMap);
 }
 
-
 Shadow::~Shadow()
 {
     glDeleteBuffers(1, &quadVBO);

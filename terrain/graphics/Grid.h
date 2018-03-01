@@ -7,12 +7,16 @@
 #include "glm/vec3.hpp"
 #include "SceneComponent.h"
 #include "Mesh.h"
+
 class Grid: public SceneComponent
 {
     public:
         Grid();
         void init(int gridSize, float tileSize);
         glm::vec3 getPosition(int i, int j);
+        int getGrideSize();
+        float getTileSize();
+        float getSize();
         void draw(Shader &shader);
     private:
         GLuint ID;

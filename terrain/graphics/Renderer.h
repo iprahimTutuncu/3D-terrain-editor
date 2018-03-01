@@ -51,6 +51,8 @@ class Renderer
 
         void enableShadowMap(bool enable);
 
+        //deviendra obselet avec la class Terrain
+        void setHeightMapTextureID(GLuint ID);
         void render();
 
     private:
@@ -58,6 +60,9 @@ class Renderer
         CubeMap cubeMap;
         PostProcess postProcess;
         RenderMode currRenderMode;
+
+        //deviendra obselet avec la class Terrain
+        GLuint heightMapTextureID;
 
         std::shared_ptr<Camera> camera;
         std::shared_ptr<DirectionalLight> directionalLight;

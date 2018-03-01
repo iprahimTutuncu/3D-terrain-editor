@@ -25,7 +25,6 @@ void Line3D::draw(Shader &shader)
 {
     shader.setVec3("color", this->color);
     mesh->draw(shader, GL_LINES);
-    std::cout << "should be drawn" << std::endl;
 }
 
 void Line3D::setBeginPoint(glm::vec3 p)

@@ -17,7 +17,6 @@ bool CollisionHandler::isRayOnTerrain(glm::vec3& intersection)
     glm::vec3 w = grid->getPosition(1,1) - currRay.origin;
 
     float k = glm::dot(w, glm::vec3(0.0, 1.0, 0.0)) / glm::dot(v, glm::vec3(0.0, 1.0, 0.0));
-    std::cout << glm::to_string(this->currRay.direction) << "le K" <<  std::endl;
 
     intersection = currRay.origin + k * v;
 

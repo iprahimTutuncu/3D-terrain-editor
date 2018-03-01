@@ -26,12 +26,14 @@ void Renderer::init()
     //possiblement mettre cela dans un fichier txt.
     std::vector<std::string> shaderName = {
         "light",
-        "flatNoLight"
+        "flatNoLight",
+        "terrain"
     };
 
     std::string shaderLocation[] = {
         "media/shader/light/light.vert",  "media/shader/light/light.frag",
         "media/shader/flatNoLight/flatNoLight.vert",  "media/shader/flatNoLight/flatNoLight.frag",
+        "media/shader/terrain/terrain.vert",  "media/shader/terrain/terrain.frag",
 
 
     };
@@ -48,27 +50,45 @@ void Renderer::init()
 void Renderer::update(const sf::Time& deltaTime)
 {
     shadow.update(*directionalLight, *camera);
-    std::cout << shadow.getFarPlane() << std::endl;
 
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, shadow.getDepthTexture());
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getID());
+
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, heightMapTextureID);
+
+    //std::cout << shadow.getFarPlane() << std::endl;
+
+    //LIGHT(MODEL) SHADER UPDATE
     p_shaders["light"]->use();
     p_shaders["light"]->setMat4("viewProj", camera->getViewProjectionMatrix());
     p_shaders["light"]->setVec3("eyePosition", camera->getPosition());
     p_shaders["light"]->setInt("depth_texture", 4);
     p_shaders["light"]->setMat4("lightSpaceCoordinate", shadow.getLightViewProjectionMatrix());
 
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, shadow.getDepthTexture());
+    p_shaders["light"]->setInt("skybox", 3);
 
     p_shaders["light"]->addLight(directionalLight->getLightProperties());
     for(auto pl: pointLights)
         p_shaders["light"]->addLight(pl.second->getLightProperties());
 
+    //TERRAIN SHADER UPDATE
+    p_shaders["terrain"]->use();
+    p_shaders["terrain"]->setMat4("viewProj", camera->getViewProjectionMatrix());
+    p_shaders["terrain"]->setVec3("eyePosition", camera->getPosition());
+    p_shaders["terrain"]->setInt("depth_texture", 4);
+    p_shaders["terrain"]->setMat4("lightSpaceCoordinate", shadow.getLightViewProjectionMatrix());
 
-    p_shaders["light"]->setInt("skybox", 3);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getID());
+    p_shaders["terrain"]->setInt("heightmap", 5);
 
+    p_shaders["terrain"]->addLight(directionalLight->getLightProperties());
+    for(auto pl: pointLights)
+        p_shaders["terrain"]->addLight(pl.second->getLightProperties());
 
+    //FLAT WITH LIGHT SHADER UPDATE
     p_shaders["flatNoLight"]->use();
     p_shaders["flatNoLight"]->setMat4("viewProj", camera->getViewProjectionMatrix());
 }
@@ -156,6 +176,11 @@ void Renderer::enableShadowMap(bool enable)
     //à finir
 }
 
+void Renderer::setHeightMapTextureID(GLuint ID)
+{
+    heightMapTextureID = ID;
+}
+
 void Renderer::render()
 {
     //dessine l'ombre des models
@@ -172,13 +197,14 @@ void Renderer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix());
 
-   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     for(auto g: grids){
-        p_shaders["light"]->use();
-        p_shaders["light"]->setMat4("model", g.second->getWorldTransform());
-        p_shaders["light"]->setMat4("modelView", camera->getViewMatrix() * g.second->getWorldTransform());
-
-        g.second->draw(*p_shaders["light"]);
+        p_shaders["terrain"]->use();
+        p_shaders["terrain"]->setMat4("model", g.second->getWorldTransform());
+        p_shaders["terrain"]->setMat4("modelView", camera->getViewMatrix() * g.second->getWorldTransform());
+        p_shaders["terrain"]->setFloat("terrainWidth", g.second->getSize());
+        p_shaders["terrain"]->setInt("terrainHeight", g.second->getSize());
+        g.second->draw(*p_shaders["terrain"]);
     }
     setRenderMode(this->currRenderMode);
 

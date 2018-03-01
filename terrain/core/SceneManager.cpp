@@ -29,9 +29,9 @@ std::shared_ptr<PointLight> SceneManager::createPointLight()
 std::shared_ptr<DirectionalLight> SceneManager::makeDirectionalLight()
 {
     directionalLight = std::make_shared<DirectionalLight>();
-    directionalLight->setAmbientColor(glm::vec3(0.05,0.05,0.1));
-    directionalLight->setDiffuseColor(glm::vec3(0.1,0.1,0.05));
-    directionalLight->setSpecularColor(glm::vec3(0.05,0.05,0.05));
+    directionalLight->setAmbientColor(glm::vec3(0.3,0.3,0.3));
+    directionalLight->setDiffuseColor(glm::vec3(0.5,0.5,0.3));
+    directionalLight->setSpecularColor(glm::vec3(0.15,0.15,0.15));
     return directionalLight;
 }
 

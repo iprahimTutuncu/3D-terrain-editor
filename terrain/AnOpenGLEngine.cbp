@@ -81,6 +81,8 @@
 		<Unit filename="graphics/FrameBuffer.h" />
 		<Unit filename="graphics/Grid.cpp" />
 		<Unit filename="graphics/Grid.h" />
+		<Unit filename="graphics/HeightMap.cpp" />
+		<Unit filename="graphics/HeightMap.h" />
 		<Unit filename="graphics/Line3D.cpp" />
 		<Unit filename="graphics/Line3D.h" />
 		<Unit filename="graphics/Material.h" />
@@ -117,6 +119,8 @@
 		<Unit filename="media/shader/shadowMap/shadowMap.vert" />
 		<Unit filename="media/shader/skybox/skybox.frag" />
 		<Unit filename="media/shader/skybox/skybox.vert" />
+		<Unit filename="media/shader/terrain/terrain.frag" />
+		<Unit filename="media/shader/terrain/terrain.vert" />
 		<Unit filename="ressourceManager/ShaderManager.cpp" />
 		<Unit filename="ressourceManager/ShaderManager.h" />
 		<Unit filename="ressourceManager/TextureManager.cpp" />

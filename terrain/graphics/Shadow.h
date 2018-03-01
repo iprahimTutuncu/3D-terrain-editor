@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Grid.h"
 
 #include "glm/mat4x4.hpp"
 #include "glm/gtx/projection.hpp"

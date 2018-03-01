@@ -8,6 +8,7 @@
 #include "../graphics/Camera.h"
 #include "../graphics/CubeMap.h"
 #include "../graphics/Material.h"
+#include "../graphics/HeightMap.h"
 #include "../ECS/Systems/RenderSystem.h"
 #include "../graphics/PostProcess.h"
 #include "../graphics/Shadow.h"
@@ -29,11 +30,13 @@ class GameState : public BaseState
         std::shared_ptr<Camera> camera;
         std::shared_ptr<Grid> grid;
         std::shared_ptr<PointLight> cursorLight;
+        std::shared_ptr<DirectionalLight> sun;
         std::shared_ptr<Line3D> line3D;
         CollisionHandler collisionHandler;
         SceneManager sceneManager;
         Renderer renderer;
         MouseRay mouseRay;
+        HeightMap heightMap;
 
 
 };
