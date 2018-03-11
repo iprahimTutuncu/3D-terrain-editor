@@ -49,21 +49,20 @@ void main()
     HMpos.y += height * 50.0f;
 
     // # P.xy store the position for which we want to calculate the normals
-      // # height() here is a function that return the height at a point in the terrain
+    // # height() here is a function that return the height at a point in the terrain
 
-      // read neightbor heights using an arbitrary small offset
-      vec3 offset = vec3(1.0/terrainWidth, 1.0/terrainWidth, 0.0);
-      float hL = texture(heightmap, uv - offset.xz).g;
-      float hR = texture(heightmap, uv + offset.xz).g;
-      float hD = texture(heightmap, uv - offset.zy).g;
-      float hU = texture(heightmap, uv + offset.zy).g;
+    // read neightbor heights using an arbitrary small offset
+    vec3 offset = vec3(1.0/terrainWidth, 1.0/terrainWidth, 0.0);
+    float hL = texture(heightmap, uv - offset.xz).g;
+    float hR = texture(heightmap, uv + offset.xz).g;
+    float hD = texture(heightmap, uv - offset.zy).g;
+    float hU = texture(heightmap, uv + offset.zy).g;
 
-      // deduce terrain normal
-      vec3 N = vec3(1.0);
-      N.x = hL - hR;
-      N.y = hD - hU;
-      N.z = 2.0;
-      N = normalize(N);
+    vec3 N;
+    N.x = hL - hR;
+    N.y = 1.0/terrainWidth;
+    N.z = hD - hU;
+    N = normalize(N);
 
     outVertex.position = (model*vec4(HMpos, 1.0f)).xyz;
     outVertex.normal   = mat3(transpose(inverse(model))) * N;

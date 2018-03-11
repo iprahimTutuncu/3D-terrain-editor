@@ -15,7 +15,7 @@ GameState::GameState(Game* parent)
     sceneManager.init(parent->getWidth(), parent->getHeight());
 
     sun = sceneManager.makeDirectionalLight();
-    sun->setDirection(glm::vec3(0.0,1.0,0));
+    sun->setDirection(glm::vec3(1.0,0.1,0.3));
     sun->enable(true);
     camera = sceneManager.getCamera();
 
@@ -26,7 +26,7 @@ GameState::GameState(Game* parent)
     std::shared_ptr<Model> m2 = sceneManager.createModel("media/models/bunny/bunny.obj");
     line3D = sceneManager.createLine3D(glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,2.0,0.0), glm::vec3(1.0,0.0,0.0));
 
-    grid = sceneManager.createGrid(100, 1.0);
+    grid = sceneManager.createGrid(200, 1.0);
     cursorLight = sceneManager.createPointLight();
     cursorLight->setAmbientColor(glm::vec3(1.0,0.0,1.0));
     cursorLight->setDiffuseColor(glm::vec3(1.0,0.0,1.0));
@@ -110,7 +110,7 @@ void GameState::event()
         z /= grid->getSize();
         z+=heightMap.getSize().y/2;
         std::cout << "x: " << x << ", y: " << z << std::endl;
-        heightMap.addCircle(10.0f, x, z,0.022, 0.0022);
+        heightMap.addCircle(10.0f, x, z,0.022, 0.022);
 
     }
 
@@ -143,7 +143,7 @@ void GameState::update(const sf::Time& deltaTime)
 
     static float t = 0.001;
     t+=0.01;
-    sun->setDirection(glm::vec3(2.0, 1.0, 0.0));
+
     if(collisionHandler.isRayOnTerrain(intersection)){
         cursorLight->setPosition(intersection);
     }

@@ -82,7 +82,6 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir)
     return shadow;
 }
 
-
 void main()
 {
 
@@ -90,13 +89,20 @@ void main()
     vec3 rgb_normal = normalize(texture(material.texture_normalMap, inVertex.texel).rgb * 2.0 - 1.0);
     vec3 eyeDir     = normalize(eyePosition - inVertex.position);
     vec3 result     = vec3(0.0);
-    vec3 c1 = vec3(0.0,1.0,0.0);
-    vec3 c2 = vec3(1.0,0.3,0.0);
+    vec3 c1 = vec3(0.2,0.5,0.0);
+    vec3 c2 = vec3(0.6,0.05,0.0);
+
+    float lv1 = 0.1;
+    float weight = 1.0;
+    float lv2 = 0.9;
+
+    float t = normal.y;
+
+    float lv = pow(1-t, 2) * lv1 + 2*(1-t) * t * weight + 2*t*lv2;
+
     float height = outHeight;
 
-    float factor = normal.y - sin(160);
-
-    result = c1 * factor + c2 * (1.0 - factor);
+    result = mix(c2, c1, lv);
 
     if(!gl_FrontFacing)
         normal = -normal;
