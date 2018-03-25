@@ -28,19 +28,6 @@ out float outHeight;
 
 void main()
 {
-    /*
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-    vec3 T = normalize(normalMatrix * aTangent);
-    vec3 N = normalize(normalMatrix * aNormal);
-    T = normalize(T - dot(T, N) * N);
-    vec3 B = cross(N, T);
-
-    mat3 TBN = transpose(mat3(T, B, N));
-    vs_out.TangentLightPos = TBN * lightPos;
-    vs_out.TangentViewPos  = TBN * viewPos;
-    vs_out.TangentFragPos  = TBN * vs_out.FragPos;
-*/
-
     vec3 HMpos = position;
     vec2 uv = vec2(position.x/terrainWidth, position.z/terrainWidth) + 0.5;
     float height = texture(heightmap, uv).r;

@@ -58,7 +58,7 @@ void Renderer::update(const sf::Time& deltaTime)
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getID());
 
     glActiveTexture(GL_TEXTURE5);
-    glBindTexture(GL_TEXTURE_2D, heightMapTextureID);
+    glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
 
     //std::cout << shadow.getFarPlane() << std::endl;
 
@@ -176,17 +176,17 @@ void Renderer::enableShadowMap(bool enable)
     //à finir
 }
 
-void Renderer::setHeightMapTextureID(GLuint ID)
+void Renderer::setTerrain(std::shared_ptr<Terrain>terrain)
 {
-    heightMapTextureID = ID;
+    this->terrain = terrain;
 }
+
 
 void Renderer::render()
 {
     //dessine l'ombre des models
     shadow.beginDraw();
     for(auto m: models)
-        if(m.first != "Model2")
         shadow.drawShadow(*m.second, m.second->getWorldTransform());
     shadow.endDraw();
 
@@ -197,14 +197,18 @@ void Renderer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix());
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //draw terrain
+    p_shaders["terrain"]->use();
+    p_shaders["terrain"]->setMat4("model", terrain->getWorldTransform());
+    p_shaders["terrain"]->setMat4("modelView", camera->getViewMatrix() * terrain->getWorldTransform());
+    terrain->draw(*p_shaders["terrain"]);
+
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     for(auto g: grids){
-        p_shaders["terrain"]->use();
-        p_shaders["terrain"]->setMat4("model", g.second->getWorldTransform());
-        p_shaders["terrain"]->setMat4("modelView", camera->getViewMatrix() * g.second->getWorldTransform());
-        p_shaders["terrain"]->setFloat("terrainWidth", g.second->getSize());
-        p_shaders["terrain"]->setInt("terrainHeight", g.second->getSize());
-        g.second->draw(*p_shaders["terrain"]);
+        p_shaders["flatNoLight"]->use();
+        p_shaders["flatNoLight"]->setMat4("model", g.second->getWorldTransform());
+        g.second->draw(*p_shaders["flatNoLight"]);
     }
     setRenderMode(this->currRenderMode);
 

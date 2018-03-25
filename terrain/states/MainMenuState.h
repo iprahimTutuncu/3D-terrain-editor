@@ -1,6 +1,8 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
+#include <TGUI/TGUI.hpp>
+
 #include "BaseState.h"
 
 class MainMenuState : public BaseState
@@ -12,6 +14,7 @@ class MainMenuState : public BaseState
         void update(const sf::Time &deltaTime) override;
         void draw() override;
     private:
+        sf::RenderWindow window;
 };
 
 #endif // MAINMENU_H

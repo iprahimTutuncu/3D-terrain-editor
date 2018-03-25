@@ -31,13 +31,13 @@ class GameState : public BaseState
         std::shared_ptr<Grid> grid;
         std::shared_ptr<PointLight> cursorLight;
         std::shared_ptr<DirectionalLight> sun;
-        std::shared_ptr<Line3D> line3D;
+        std::shared_ptr<Line3D> line3D; //debug purpose
+        std::shared_ptr<Terrain> terrain;
+
         CollisionHandler collisionHandler;
         SceneManager sceneManager;
         Renderer renderer;
         MouseRay mouseRay;
-        HeightMap heightMap;
-
 
 };
 

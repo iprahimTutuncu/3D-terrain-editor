@@ -2,7 +2,7 @@
 #include "glm/ext.hpp"
 CollisionHandler::CollisionHandler(std::shared_ptr<Camera> camera)
 {
-    //ctor
+
 }
 
 CollisionHandler::~CollisionHandler()
@@ -13,8 +13,8 @@ CollisionHandler::~CollisionHandler()
 
 bool CollisionHandler::isRayOnTerrain(glm::vec3& intersection)
 {
-    glm::vec3 v = this->currRay.direction * currRay.length - currRay.origin;
-    glm::vec3 w = grid->getPosition(1,1) - currRay.origin;
+    glm::vec3 v = this->currRay.direction * currRay.length;
+    glm::vec3 w = terrain->getPosition(1,1) - currRay.origin;
 
     float k = glm::dot(w, glm::vec3(0.0, 1.0, 0.0)) / glm::dot(v, glm::vec3(0.0, 1.0, 0.0));
 
@@ -78,9 +78,9 @@ void CollisionHandler::setWaterLevel(float waterLevel)
 
 }
 
-void CollisionHandler::setGrid(std::shared_ptr<Grid>grid)
+void CollisionHandler::setTerrain(std::shared_ptr<Terrain> terrain)
 {
-    this->grid = grid;
+    this->terrain = terrain;
 }
 
 

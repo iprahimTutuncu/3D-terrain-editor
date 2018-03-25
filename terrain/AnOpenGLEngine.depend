@@ -1026,17 +1026,17 @@
 1519361193 source:/home/tater/Bureau/synthese/graphics/Line3D.cpp
 	"Line3D.h"
 
-1519670268 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/CollisionHandler.cpp
+1521993909 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/CollisionHandler.cpp
 	"CollisionHandler.h"
 	"glm/ext.hpp"
 
-1519094965 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/CollisionHandler.h
+1520800091 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/CollisionHandler.h
 	<memory>
 	<unordered_map>
-	"Grid.h"
+	"Terrain.h"
 	"MouseRay.h"
 
-1519516840 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Grid.h
+1520800411 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Grid.h
 	<memory>
 	<vector>
 	<GL/glew.h>
@@ -1083,7 +1083,7 @@
 	"Mesh.h"
 	"../core/SceneComponent.h"
 
-1519451662 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/MouseRay.cpp
+1521496068 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/MouseRay.cpp
 	"MouseRay.h"
 
 1518406772 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/SceneComponent.cpp
@@ -1131,7 +1131,7 @@
 	<string>
 	"../graphics/Shader.h"
 
-1518412248 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Model.h
+1520787893 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Model.h
 	"Mesh.h"
 	"../ressourceManager/TextureManager.h"
 	<iostream>
@@ -1167,7 +1167,7 @@
 	"glm/mat4x4.hpp"
 	"glm/gtx/projection.hpp"
 
-1519503303 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Renderer.h
+1520798466 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Renderer.h
 	<memory>
 	<SFML/System/Time.hpp>
 	"Camera.h"
@@ -1179,6 +1179,7 @@
 	"Shadow.h"
 	"Grid.h"
 	"Line3D.h"
+	"../core/Terrain.h"
 
 1519353780 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Line3D.h
 	"Mesh.h"
@@ -1189,12 +1190,15 @@
 	"SceneNode.h"
 	<iostream>
 
-1519078837 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/Terrain.cpp
+1521421665 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/Terrain.cpp
 	"Terrain.h"
 
-1519095242 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/Terrain.h
+1520800671 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/core/Terrain.h
+	"../graphics/Grid.h"
+	"../graphics/HeightMap.h"
+	<string>
 
-1517700372 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/Game.cpp
+1521320339 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/Game.cpp
 	"Game.h"
 	"states/GameState.h"
 	"states/MainMenuState.h"
@@ -1205,7 +1209,7 @@
 	<stack>
 	<memory>
 
-1519781854 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/GameState.h
+1520798861 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/GameState.h
 	"../graphics/Shader.h"
 	"../graphics/Model.h"
 	"../graphics/light/DirectionalLight.h"
@@ -1255,10 +1259,11 @@
 	<SFML/System/Time.hpp>
 	"../Game.h"
 
-1517696326 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/MainMenuState.h
+1521314819 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/MainMenuState.h
+	<TGUI/TGUI.hpp>
 	"BaseState.h"
 
-1519361998 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Camera.cpp
+1521431616 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Camera.cpp
 	"Camera.h"
 
 1517805524 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/CubeMap.cpp
@@ -1283,7 +1288,7 @@
 1519670355 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Line3D.cpp
 	"Line3D.h"
 
-1519354678 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Mesh.cpp
+1520787699 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Mesh.cpp
 	"Mesh.h"
 	<glm/gtc/type_ptr.hpp>
 
@@ -1293,7 +1298,7 @@
 1518209389 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/PostProcess.cpp
 	"PostProcess.h"
 
-1519518173 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Renderer.cpp
+1520971139 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/Renderer.cpp
 	"Renderer.h"
 	<iostream>
 
@@ -1315,24 +1320,25 @@
 	"SFML/Graphics.hpp"
 	<iostream>
 
-1520220852 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/GameState.cpp
+1521994526 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/GameState.cpp
 	"GameState.h"
 	"glm/ext.hpp"
 	<iostream>
 
-1517700304 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/MainMenuState.cpp
+1521320512 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/states/MainMenuState.cpp
 	"MainMenuState.h"
 	"GameState.h"
 
-1519793387 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/HeightMap.cpp
+1521422084 source:/home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/HeightMap.cpp
 	"HeightMap.h"
 	"../ressourceManager/TextureManager.h"
 	<iostream>
 	"glm/glm.hpp"
 	<math.h>
 
-1519501798 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/HeightMap.h
+1521421960 /home/tater/Bureau/synthese/Duper-NeoDadaistic3DTerrainGenerationForYoungElitistProgrammer/terrain/graphics/HeightMap.h
 	<SFML/Graphics/Image.hpp>
 	<GL/glew.h>
 	<glm/vec2.hpp>
+	<glm/vec3.hpp>
 

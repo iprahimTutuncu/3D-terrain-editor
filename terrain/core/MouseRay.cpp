@@ -51,5 +51,5 @@ glm::vec3 MouseRay::calcWorldCoords(glm::vec4 eyeCoords)
 {
     glm::vec4 worldCoord = glm::inverse(view) * eyeCoords;
     glm::vec3 rayWorld = glm::vec3(worldCoord.x, worldCoord.y, worldCoord.z);
-    return glm::normalize(rayWorld);
+    return glm::normalize(rayWorld - camera->getPosition());
 }

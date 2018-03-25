@@ -15,7 +15,8 @@ Game::Game():
     settings.attributeFlags = sf::ContextSettings::Core;
 
     window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "OpenGL", sf::Style::Close, settings);
-
+    window.setActive(false);
+    window.setVerticalSyncEnabled(true);
     glewExperimental = GL_TRUE;
     glewInit();
 
@@ -71,7 +72,7 @@ void Game::run()
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::Time timePerFrame = sf::seconds(1.f / 60.f);
 
-    while(window.isOpen() && states.size() != 0){
+    while(states.size() != 0){
         states.top()->event();
 
         //faire la loop des update seulement si le compteur fait le temps requis

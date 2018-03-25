@@ -25,6 +25,8 @@ class Model: public SceneComponent
         void Draw(Shader &shader);
         void setEmitColor(glm::vec3 color);
 
+        ~Model() = default;
+
     private:
         vector<Mesh> meshes;
 

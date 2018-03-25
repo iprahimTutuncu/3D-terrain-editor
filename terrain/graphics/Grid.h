@@ -12,6 +12,7 @@ class Grid: public SceneComponent
 {
     public:
         Grid();
+
         void init(int gridSize, float tileSize);
         glm::vec3 getPosition(int i, int j);
         int getGrideSize();

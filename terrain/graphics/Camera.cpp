@@ -8,7 +8,7 @@ Camera::Camera(float width,float height, std::shared_ptr<Mesh> parent):
     else
         position = glm::vec3(0);
 
-    near_plane = 0.1f;
+    near_plane = 0.01f;
     far_plane =  100.5f;
     FOV = 53.0f;
 

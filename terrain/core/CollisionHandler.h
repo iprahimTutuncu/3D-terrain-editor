@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <unordered_map>
-#include "Grid.h"
+#include "Terrain.h"
 #include "MouseRay.h"
 
 struct Ray{
@@ -33,7 +33,7 @@ class CollisionHandler
         void addGrassPosition(int ID, glm::vec3 position);
 
         void setWaterLevel(float waterLevel);
-        void setGrid(std::shared_ptr<Grid> grid);
+        void setTerrain(std::shared_ptr<Terrain> terrain);
         void moveCameraOutOfTerrain();
 
     private:
@@ -43,8 +43,8 @@ class CollisionHandler
         Ray currRay;
         float waterLevel;
 
-        //test, a effacer
-        std::shared_ptr<Grid> grid;
+        Grid grid;
+        std::shared_ptr<Terrain> terrain;
 
 };
 
