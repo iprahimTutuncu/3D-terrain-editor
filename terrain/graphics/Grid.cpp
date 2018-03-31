@@ -9,15 +9,19 @@ Grid::Grid():
 void Grid::init(int gridSize, float tileSize)
 {
     //generation de spoints pour la grille
+
+    std::vector<glm::vec2> texels;
+    texels.resize(gridSize * gridSize);
     positions.resize(gridSize * gridSize);
     indices.resize(gridSize*gridSize*6);
     this->gridSize = gridSize;
     this->tileSize = tileSize;
 
     for(int x = 0; x < gridSize; x++)
-        for(int z = 0; z < gridSize; z++)
-            positions[x * gridSize + z] = glm::vec3((x * tileSize) - gridSize/2, 1.0f, z * tileSize - gridSize/2);
-
+        for(int z = 0; z < gridSize; z++){
+            positions[x * gridSize + z] = glm::vec3((x * tileSize) - gridSize/2, 0.0f, z * tileSize - gridSize/2);
+            texels[x * gridSize + z] = glm::vec2(x%2,z%2);
+        }
     unsigned int index = 0;
 
     for(int x = 0; x < gridSize-1; x++)
@@ -35,9 +39,10 @@ void Grid::init(int gridSize, float tileSize)
 
     std::vector<Vertex> vertices;
     glm::vec3 normal(0.0, 1.0, 0.0);
-    for(glm::vec3 &pos: positions)
-        vertices.emplace_back(Vertex(pos, glm::normalize(glm::vec2(pos.x, pos.z) * glm::vec2(0.5)) - glm::vec2(0.5), normal));
 
+    for(int i = 0; i < positions.size(); i++){
+        vertices.emplace_back(Vertex(positions[i], texels[i], normal));
+    }
     std::vector<Texture> textures;
 
     std::string typeName = "texture_reflection";

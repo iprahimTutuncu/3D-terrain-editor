@@ -25,7 +25,7 @@ GLuint HeightMap::getTextureID()
 void HeightMap::reload()
 {
     mImage.loadFromFile(mPath);
-
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D, mTextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mImage.getSize().x, mImage.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImage.getPixelsPtr());
 
@@ -76,12 +76,16 @@ void HeightMap::addCircle(float height, int x, int y, float attLinear,float attQ
                     newColor.r = 255;
                     newColor.g = 255;
                     newColor.b = 255;
+                }else if(h <= 0)
+                {
+                    newColor.r = 0;
+                    newColor.g = 0;
+                    newColor.b = 0;
                 }else{
                     newColor.r = h;
                     newColor.g = h;
                     newColor.b = h;
                 }
-
                 mImage.setPixel(i, j, newColor);
                 //std::cout << "texel modifier" << i << ", " << j << std::endl;
             }

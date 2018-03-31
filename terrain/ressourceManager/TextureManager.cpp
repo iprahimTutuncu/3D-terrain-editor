@@ -34,8 +34,8 @@ namespace RessourceManager{
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             glBindTexture( GL_TEXTURE_2D, 0 );
-
             p_textureIDs.insert({name, p_textureID});
+
             return p_textureID;
         }
     }

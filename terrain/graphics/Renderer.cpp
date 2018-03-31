@@ -60,6 +60,7 @@ void Renderer::update(const sf::Time& deltaTime)
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
 
+    std::vector<std::shared_ptr<GLuint>> terrainTextures = terrain->getTerrainTextures();
     //std::cout << shadow.getFarPlane() << std::endl;
 
     //LIGHT(MODEL) SHADER UPDATE
@@ -83,6 +84,8 @@ void Renderer::update(const sf::Time& deltaTime)
     p_shaders["terrain"]->setMat4("lightSpaceCoordinate", shadow.getLightViewProjectionMatrix());
 
     p_shaders["terrain"]->setInt("heightmap", 5);
+    p_shaders["terrain"]->setFloat("terrainWidth", terrain->getGridSize());
+    p_shaders["terrain"]->setInt("num_texture_size", terrainTextures.size());
 
     p_shaders["terrain"]->addLight(directionalLight->getLightProperties());
     for(auto pl: pointLights)

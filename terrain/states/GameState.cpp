@@ -9,16 +9,20 @@ GameState::GameState(Game* parent)
 :renderer((float) parent->getWidth(),(float) parent->getHeight()),
  collisionHandler(camera)
 {
+
+
     this->parent = parent;
 
-    terrain = std::make_shared<Terrain>("media/texture/defaultMap.png");
-
+    terrain = std::make_shared<Terrain>("media/texture/testHM.png");
+    terrain->addTerrainTexture("media/texture/terrain/grass_ground_d.jpg", "media/texture/terrain/grass_ground_s.jpg" , 0.9);
+    terrain->addTerrainTexture("media/texture/terrain/desert_mud_d.jpg", "media/texture/terrain/desert_mud_s.jpg", 0.1);
     sceneManager.init(parent->getWidth(), parent->getHeight());
 
     sun = sceneManager.makeDirectionalLight();
     sun->setDirection(glm::vec3(1.0,0.1,0.3));
     sun->enable(true);
     camera = sceneManager.getCamera();
+    camera->setPosition(glm::vec3(0.0, 2.0, 0.0));
 
     std::shared_ptr<PointLight> p1 = sceneManager.createPointLight();
     std::shared_ptr<PointLight> p2 = sceneManager.createPointLight();
@@ -129,8 +133,11 @@ void GameState::event()
         int z = cursorLight->getLightProperties().position.z * terrain->getGridSize();
         z /= grid->getSize();
         z+=terrain->getGridSize()/2;
-        std::cout << "x: " << x << ", y: " << z << std::endl;
-        terrain->addCircle(1.0f, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+
+        float extrude = 1.0;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
+            extrude = -1.0;
+        terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
     }
 
 
@@ -153,15 +160,13 @@ void GameState::update(const sf::Time& deltaTime)
     glm::vec3 beginPos = camera->getPosition();
     line3D->setBeginPoint(beginPos);
 
-    glm::vec3 endPos = beginPos + 100.0f * mouseRay.getCurrRay();
+    glm::vec3 endPos = beginPos + camera->getFarPlane() * mouseRay.getCurrRay();
     line3D->setEndPoint(cursorLight->getLightProperties().position);
 
     collisionHandler.setTerrain(terrain);
     collisionHandler.setRayDirection(mouseRay.getCurrRay());
     collisionHandler.setRayOrigin(beginPos);
-    collisionHandler.setRayLength(100.0f);
-
-    std::cout << glm::to_string(camera->getPosition()) << std::endl;
+    collisionHandler.setRayLength(camera->getFarPlane());
 
     static float t = 0.001;
     t+=0.01;
@@ -176,8 +181,9 @@ void GameState::update(const sf::Time& deltaTime)
         z /= grid->getSize();
         z+=terrain->getGridSize()/2;
 
-        float y = terrain->getHeight(glm::vec2(x,z)) / 255;
-        y *= 50;
+        float y = terrain->getHeight(glm::vec2(x,z)) / 256;
+        y *= 69;
+
         glm::vec3 height = glm::vec3(0.0,y,0.0);
         cursorLight->setPosition(cursorLight->getLightProperties().position + height);
 

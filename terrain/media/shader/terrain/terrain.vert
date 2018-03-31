@@ -33,7 +33,7 @@ void main()
     float height = texture(heightmap, uv).r;
     if(height < 0.5f)
         ;//height = 1.0f - height;
-    HMpos.y += height * 50.0f;
+    HMpos.y += height * 69.0f;
 
     // # P.xy store the position for which we want to calculate the normals
     // # height() here is a function that return the height at a point in the terrain
