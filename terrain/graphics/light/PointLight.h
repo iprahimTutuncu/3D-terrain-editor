@@ -13,6 +13,7 @@ class PointLight: public SceneComponent
         void setAmbientColor(glm::vec3 color);
         void setDiffuseColor(glm::vec3 color);
         void setSpecularColor(glm::vec3 color);
+        bool pointLightHasCursor(bool enable);
 
         void setAttenuation(float constant, float linear, float quadratic);
         void setPosition(glm::vec3 position);

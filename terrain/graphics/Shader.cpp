@@ -118,6 +118,8 @@ void Shader::addLight(LightProperties light)
     setBool("light[" + std::to_string(lightCounter) + "].isEnable", light.isEnable);
     setBool("light[" + std::to_string(lightCounter) + "].isPoint", light.isPoint);
     setBool("light[" + std::to_string(lightCounter) + "].isDirection", light.isDirection);
+    setBool("light[" + std::to_string(lightCounter) + "].isCursor", light.isCursor);
+
     setVec3("light[" + std::to_string(lightCounter) + "].ambient", light.ambient);
     setVec3("light[" + std::to_string(lightCounter) + "].diffuse", light.diffuse);
     setVec3("light[" + std::to_string(lightCounter) + "].specular", light.specular);
@@ -127,6 +129,8 @@ void Shader::addLight(LightProperties light)
     setFloat("light[" + std::to_string(lightCounter) + "].attenuationConstant", light.attenuationConstant);
     setFloat("light[" + std::to_string(lightCounter) + "].attenuationLinear", light.attenuationLinear);
     setFloat("light[" + std::to_string(lightCounter) + "].attenuationQuadratic", light.attenuationQuadratic);
+
+
     lightCounter++;
 }
 

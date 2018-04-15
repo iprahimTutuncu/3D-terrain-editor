@@ -65,7 +65,7 @@ void HeightMap::addCircle(float height, int x, int y, float attLinear,float attQ
             float dx = i - x;
             float dy = j - y;
             float d = sqrt(dx*dx + dy*dy);
-            if(d < 1.0 / (attLinear * attQuad)){
+            if(d < 1.0 / (attLinear + attQuad)){
                 sf::Color newColor = mImage.getPixel(i,j);
                 top < newColor.r? top = newColor.r:top = top;
 

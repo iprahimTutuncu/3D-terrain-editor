@@ -28,8 +28,8 @@ class Game
         sf::Window window;
         std::stack<BaseState*> states;
 
-        const unsigned int SCREEN_WIDTH  = 1366;
-        const unsigned int SCREEN_HEIGHT = 768;
+        const unsigned int SCREEN_WIDTH  = 800;
+        const unsigned int SCREEN_HEIGHT = 600;
 
         //variable jettez dans le tat
 

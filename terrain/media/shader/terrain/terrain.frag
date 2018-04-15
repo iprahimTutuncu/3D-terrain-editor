@@ -17,7 +17,7 @@ struct LightProperties{
     bool isEnable;
     bool isDirection;
     bool isPoint;
-
+    bool isCursor;
     vec3 position;
     vec3 direction;
 
@@ -78,13 +78,13 @@ void main()
 
     //INTERPOLATION DES TEXTURES AVEC LES NORMALES
     for(int i = 0; affected_normal_levels[i] < t && i < num_texture_size; i++)
-        lvMin = i;
+        lvMin = 0;
 
     for(int i = num_texture_size; affected_normal_levels[i] > t && i > 0; i--)
-        lvMax = i;
+        lvMax = 1;
 
-    float lv1 = 0.2; //affected_normal_levels[lvMin];
-    float lv2 = 0.8; //affected_normal_levels[lvMax];
+    float lv1 = 0.3;//affected_normal_levels[lvMin];
+    float lv2 = 1.0;//affected_normal_levels[lvMax];
 
     lv = pow(1-t, 2) * lv1 + 2*(1-t) * t * weight + 2*t*lv2;
 
@@ -94,13 +94,17 @@ void main()
     if(!gl_FrontFacing)
         normal = -normal;
 
+    lvMin = 0;
+    lvMax = 1;
 
-    vec3 diffuse_color  = mix(texture(materials[0].texture_diffuse , inVertex.texel).rgb,
-                              texture(materials[1].texture_diffuse , inVertex.texel).rgb,
+    const int zero = 0;
+    const int un = 1;
+    vec3 diffuse_color  = mix(texture(materials[zero].texture_diffuse , inVertex.texel).rgb,
+                              texture(materials[un].texture_diffuse , inVertex.texel).rgb,
                               lv);
 
-    vec3 specular_color = mix(texture(materials[0].texture_specular, inVertex.texel).rgb,
-                              texture(materials[1].texture_specular, inVertex.texel).rgb,
+    vec3 specular_color = mix(texture(materials[zero].texture_specular, inVertex.texel).rgb,
+                              texture(materials[un].texture_specular, inVertex.texel).rgb,
                               lv);
 
     //AJOUT DES LUMIERES
@@ -118,35 +122,77 @@ void main()
 
 
 vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,vec3 diffuse_color,vec3 specular_color){
-    vec3 lightDir = light.position - position;
-    float dist = length(lightDir);
-    lightDir = lightDir / dist;
 
-    //diffuse
-    float diff = max(dot(normal, lightDir), 0.0);
+    if(light.isCursor){
+        vec3 lightDir = light.position - position;
+        float dist = length(lightDir);
+        lightDir = lightDir / dist;
 
-    //specular
-    vec3 halfwayDir = normalize(lightDir + eyeDir);
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32);
+        //diffuse
+        float diff = max(dot(normal, lightDir), 0.0);
 
-    //light with texture map
-    vec3 ambient  = light.ambient  *        diffuse_color;
-    vec3 diffuse  = light.diffuse  * diff * diffuse_color;
-    vec3 specular = light.specular * spec * specular_color;
+        //specular
+        vec3 halfwayDir = normalize(lightDir + eyeDir);
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), 256);
 
-    //compilation des lumieres
-    vec3 scattered = ambient + diffuse;
-    vec3 reflected = specular;
+        //light with texture map
+        vec3 ambient  = light.ambient  *        diffuse_color;
+        vec3 diffuse  = light.diffuse  * diff * diffuse_color;
+        vec3 specular = light.specular * spec * specular_color;
 
-    //attenuation
-    float attenuation = 1.0 / (light.attenuationConstant  +
-                         light.attenuationLinear    * dist +
-                         light.attenuationQuadratic * dist * dist);
+        //compilation des lumieres
+        vec3 scattered = ambient + diffuse;
+        vec3 reflected = specular;
 
-    scattered *= attenuation;
-    reflected *= attenuation;
+        //attenuation
+        float attenuation = 1.0 / (light.attenuationConstant  +
+                             light.attenuationLinear    * dist +
+                             light.attenuationQuadratic * dist * dist);
 
-    return scattered + reflected;
+        scattered *= attenuation;
+        reflected *= attenuation;
+
+        float min_length = 1.0 / (light.attenuationLinear + light.attenuationQuadratic);
+
+        if(dist < min_length + 0.04 && dist > min_length)
+            return vec3(0.0, 0.0, 1.0);
+        else if(dist > min_length + 0.04)
+            return vec3(0.0);
+
+        return scattered + reflected;
+
+    }
+    else{
+        vec3 lightDir = light.position - position;
+        float dist = length(lightDir);
+        lightDir = lightDir / dist;
+
+        //diffuse
+        float diff = max(dot(normal, lightDir), 0.0);
+
+        //specular
+        vec3 halfwayDir = normalize(lightDir + eyeDir);
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), 256);
+
+        //light with texture map
+        vec3 ambient  = light.ambient  *        diffuse_color;
+        vec3 diffuse  = light.diffuse  * diff * diffuse_color;
+        vec3 specular = light.specular * spec * specular_color;
+
+        //compilation des lumieres
+        vec3 scattered = ambient + diffuse;
+        vec3 reflected = specular;
+
+        //attenuation
+        float attenuation = 1.0 / (light.attenuationConstant  +
+                             light.attenuationLinear    * dist +
+                             light.attenuationQuadratic * dist * dist);
+
+        scattered *= attenuation;
+        reflected *= attenuation;
+
+        return scattered + reflected;
+    }
 }
 
 vec3 directionalLight(LightProperties light, vec3 normal,vec3 eyeDir,vec3 diffuse_color,vec3 specular_color){
@@ -159,7 +205,7 @@ vec3 directionalLight(LightProperties light, vec3 normal,vec3 eyeDir,vec3 diffus
     if(diff == 0.0)
         spec = 0.0;
     else
-        spec = pow(spec, 32);
+        spec = pow(spec, 256);
 
     vec3 ambient  = light.ambient  *        diffuse_color;
     vec3 diffuse  = light.diffuse  * diff * diffuse_color;

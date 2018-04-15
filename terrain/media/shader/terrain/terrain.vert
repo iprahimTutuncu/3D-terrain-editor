@@ -38,13 +38,15 @@ void main()
     // # P.xy store the position for which we want to calculate the normals
     // # height() here is a function that return the height at a point in the terrain
 
-    // read neightbor heights using an arbitrary small offset
+    //recherche des hauteurs dans les cotes de la normal avec un offset de la taille du terrrain.
     vec3 offset = vec3(1.0/terrainWidth, 1.0/terrainWidth, 0.0);
     float hL = texture(heightmap, uv - offset.xz).g;
     float hR = texture(heightmap, uv + offset.xz).g;
     float hD = texture(heightmap, uv - offset.zy).g;
     float hU = texture(heightmap, uv + offset.zy).g;
 
+    //calcule qui fonctionne magiquement trouve sur stackoverflow
+    //ca mevite un cross product
     vec3 N;
     N.x = hL - hR;
     N.y = 1.0/terrainWidth;

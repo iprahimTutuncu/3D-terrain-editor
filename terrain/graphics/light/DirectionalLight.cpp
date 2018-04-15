@@ -8,6 +8,7 @@ DirectionalLight::DirectionalLight(glm::vec3 direction):
     lightProperties.isPoint = false;
     lightProperties.isDirection = true;
     lightProperties.isSpot = false;
+    lightProperties.isCursor = false;
 
     lightProperties.direction = direction;
 }

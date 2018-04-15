@@ -8,6 +8,7 @@ struct LightProperties{
     bool isDirection;
     bool isPoint;
     bool isSpot;
+    bool isCursor;
 
     glm::vec3 position;
     glm::vec3 direction;

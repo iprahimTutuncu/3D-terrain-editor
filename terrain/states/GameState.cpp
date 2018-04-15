@@ -15,7 +15,7 @@ GameState::GameState(Game* parent)
 
     terrain = std::make_shared<Terrain>("media/texture/testHM.png");
     terrain->addTerrainTexture("media/texture/terrain/grass_ground_d.jpg", "media/texture/terrain/grass_ground_s.jpg" , 0.9);
-    terrain->addTerrainTexture("media/texture/terrain/desert_mud_d.jpg", "media/texture/terrain/desert_mud_s.jpg", 0.1);
+    terrain->addTerrainTexture("media/texture/terrain/mntn_dark_d.jpg", "media/texture/terrain/mntn_dark_s.jpg", 0.1);
     sceneManager.init(parent->getWidth(), parent->getHeight());
 
     sun = sceneManager.makeDirectionalLight();
@@ -36,6 +36,7 @@ GameState::GameState(Game* parent)
     cursorLight->setAmbientColor(glm::vec3(1.0,0.0,1.0));
     cursorLight->setDiffuseColor(glm::vec3(1.0,0.0,1.0));
     cursorLight->setSpecularColor(glm::vec3(1.0,0.0,1.0));
+    cursorLight->pointLightHasCursor(true);
 
     std::shared_ptr<SceneNode> n = sceneManager.createNode();
     std::shared_ptr<SceneNode> n2 = sceneManager.createNode();
@@ -43,13 +44,13 @@ GameState::GameState(Game* parent)
 
     //n->addComponent(m1);
     //n->addComponent(p1);
-    n->addComponent(grid);
+    //n->addComponent(grid);
     //n->setScale(glm::vec3(0.2, 0.2, 0.2));
     n->setPosition(glm::vec3(0.0,0.0,0.0));
 
     n3->addComponent(m2);
     //n3->addComponent(p2);
-    n3->setPosition(glm::vec3(0.0,0.0,0.0));
+    n3->setPosition(glm::vec3(0.0,1.0,0.0));
 
     n2->addComponent(cursorLight);
     n2->addComponent(line3D);
@@ -87,6 +88,18 @@ void GameState::event()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
             parent->getWindow().close();
         }
+        if(event.type == sf::Event::MouseWheelMoved){
+            float multY = 1.0;
+
+            if(event.mouseWheel.delta == 1)
+                multY = 1.1;
+            else if(event.mouseWheel.delta == -1)
+                multY = 0.9;
+
+            cursorLight->setAttenuation(1.0,
+                                        cursorLight->getLightProperties().attenuationLinear * multY,
+                                        cursorLight->getLightProperties().attenuationQuadratic * multY);
+        }
     }
     static float prevMouseY = 0;
 
@@ -111,21 +124,8 @@ void GameState::event()
         camera->turn(1);
     }
 
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Right)){
-        float multY = 1.0;
 
-        if(changeInYaxis > 0)
-            multY = 1.1;
-        else if(changeInYaxis < 0)
-            multY = 0.9;
-
-        cursorLight->setAttenuation(1.0,
-                                    cursorLight->getLightProperties().attenuationLinear * multY,
-                                    cursorLight->getLightProperties().attenuationQuadratic * multY);
-
-    }
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::E)){
+    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
         //terrain.elevateWithCursorPosition(10.0f, cursorLight->getLightProperties().position);
         int x = cursorLight->getLightProperties().position.x * terrain->getGridSize();
         x /= grid->getSize();
@@ -135,9 +135,23 @@ void GameState::event()
         z+=terrain->getGridSize()/2;
 
         float extrude = 1.0;
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
-            extrude = -1.0;
+
         terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+    }
+
+    if(sf::Mouse::isButtonPressed(sf::Mouse::Right)){
+        //terrain.elevateWithCursorPosition(10.0f, cursorLight->getLightProperties().position);
+        int x = cursorLight->getLightProperties().position.x * terrain->getGridSize();
+        x /= grid->getSize();
+        x+=terrain->getGridSize()/2;
+        int z = cursorLight->getLightProperties().position.z * terrain->getGridSize();
+        z /= grid->getSize();
+        z+=terrain->getGridSize()/2;
+
+        float extrude = -1.0;
+
+        terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+
     }
 
 
@@ -151,8 +165,11 @@ void GameState::update(const sf::Time& deltaTime)
     //std::cout << 1 / deltaTime.asSeconds() << std::endl;
     static float average = 0;
     average += 1 / deltaTime.asSeconds();
-    static int counter = 0;
-    counter++;
+    static float counter = 0.001;
+    counter+= 0.01;
+
+    //SUN MOVE!
+    sun->setDirection(glm::vec3(cos(counter), 0.5, sin(counter)));
 
     renderer.update(deltaTime);
 

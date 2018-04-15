@@ -9,7 +9,7 @@ Terrain::Terrain(const std::string& path):
 
 void Terrain::init(unsigned int gridSize)
 {
-    grid.init(200, 1.0);
+    grid.init(gridSize, 1.0);
 }
 
 void Terrain::build()

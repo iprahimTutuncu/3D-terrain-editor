@@ -7,6 +7,7 @@ PointLight::PointLight(glm::vec3 position):
     lightProperties.isPoint = true;
     lightProperties.isDirection = false;
     lightProperties.isSpot = false;
+    lightProperties.isCursor = false;
 
     lightProperties.position = position;
     lightProperties.attenuationConstant = 1.0;
@@ -33,6 +34,12 @@ void PointLight::setSpecularColor(glm::vec3 color)
 {
     lightProperties.specular = color;
 }
+
+bool PointLight::pointLightHasCursor(bool enable)
+{
+    lightProperties.isCursor = enable;
+}
+
 
 void PointLight::setAttenuation(float constant, float linear, float quadratic)
 {
