@@ -13,9 +13,13 @@ GameState::GameState(Game* parent)
 
     this->parent = parent;
 
-    terrain = std::make_shared<Terrain>("media/texture/testHM.png");
-    terrain->addTerrainTexture("media/texture/terrain/grass_ground_d.jpg", "media/texture/terrain/grass_ground_s.jpg" , 0.9);
-    terrain->addTerrainTexture("media/texture/terrain/mntn_dark_d.jpg", "media/texture/terrain/mntn_dark_s.jpg", 0.1);
+    terrain = std::make_shared<Terrain>("media/texture/testHM.png", "media/texture/testHM.png");
+    terrain->addTerrainTexture("media/models/tree/grass.png", "media/models/tree/grass.png" , 2);
+    terrain->addTerrainTexture("media/models/tree/rock.png", "media/models/tree/rockSpec.png", 1);
+    terrain->addTerrainTexture("media/models/tree/snow.png", "media/models/tree/snow.png" , 3);
+
+    water = std::make_shared<Water>();
+    water->setHeight(5.0f);
     sceneManager.init(parent->getWidth(), parent->getHeight());
 
     sun = sceneManager.makeDirectionalLight();
@@ -23,12 +27,13 @@ GameState::GameState(Game* parent)
     sun->enable(true);
     camera = sceneManager.getCamera();
     camera->setPosition(glm::vec3(0.0, 2.0, 0.0));
+    camera->setSpeed(5);
 
     std::shared_ptr<PointLight> p1 = sceneManager.createPointLight();
     std::shared_ptr<PointLight> p2 = sceneManager.createPointLight();
 
     std::shared_ptr<Model> m1 = sceneManager.createModel("media/models/nanosuit/nanosuit.obj");
-    std::shared_ptr<Model> m2 = sceneManager.createModel("media/models/bunny/bunny.obj");
+    std::shared_ptr<Model> m2 = sceneManager.createModel("media/models/tree/treeHR.obj");
     line3D = sceneManager.createLine3D(glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,2.0,0.0), glm::vec3(1.0,0.0,0.0));
 
     grid = sceneManager.createGrid(terrain->getGridSize()/10, 10.0);
@@ -73,12 +78,18 @@ GameState::GameState(Game* parent)
     //renderer.setPostProcessMode(PostProcessMode::GRAY_SCALE);
     renderer.setRenderMode(RenderMode::FILL);
     renderer.setTerrain(terrain);
+    renderer.setWater(water);
+
     mouseRay.init(camera);
+
 
 }
 
 void GameState::event()
 {
+    static float elevationScale = 1.f;
+    static float elevationRadiusScale = 1.f;
+
     sf::Event event;
     while (parent->getWindow().pollEvent(event))
     {
@@ -109,7 +120,6 @@ void GameState::event()
     float changeInYaxis = prevMouseY - mousey;
     prevMouseY = mousey;
 
-    camera->input_callback(mousex, mousey);
     mouseRay.update(mousex, mousey);
 
 
@@ -118,12 +128,14 @@ void GameState::event()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         camera->move_back();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
-        camera->turn(-1);
+        camera->turn(-2);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
-        camera->turn(1);
+        camera->turn(2);
     }
 
+
+    camera->input_callback(mousex, mousey);
 
     if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
         //terrain.elevateWithCursorPosition(10.0f, cursorLight->getLightProperties().position);
@@ -134,9 +146,12 @@ void GameState::event()
         z /= grid->getSize();
         z+=terrain->getGridSize()/2;
 
-        float extrude = 1.0;
+        float extrude = 0.003 * elevationScale;
 
-        terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+            terrain->addCircleOnTextureMap(100.f, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+        else
+            terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic, elevationRadiusScale);
     }
 
     if(sf::Mouse::isButtonPressed(sf::Mouse::Right)){
@@ -148,21 +163,104 @@ void GameState::event()
         z /= grid->getSize();
         z+=terrain->getGridSize()/2;
 
-        float extrude = -1.0;
 
-        terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+        float extrude = -0.003 * elevationScale;
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)){
+            terrain->addCircleOnTextureMap(-100.f, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+        }
+        else
+            terrain->addCircle(extrude, x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic, elevationRadiusScale);
 
     }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
+        //terrain.elevateWithCursorPosition(10.0f, cursorLight->getLightProperties().position);
+        int x = cursorLight->getLightProperties().position.x * terrain->getGridSize();
+        x /= grid->getSize();
+        x+=terrain->getGridSize()/2;
+        int z = cursorLight->getLightProperties().position.z * terrain->getGridSize();
+        z /= grid->getSize();
+        z+=terrain->getGridSize()/2;
+
+        terrain->addAveragingCircle(x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+    }
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)){
+
+        int x = cursorLight->getLightProperties().position.x * terrain->getGridSize();
+        x /= grid->getSize();
+        x+=terrain->getGridSize()/2;
+        int z = cursorLight->getLightProperties().position.z * terrain->getGridSize();
+        z /= grid->getSize();
+        z+=terrain->getGridSize()/2;
 
 
+        terrain->addSmoothCircle(x, z,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic);
+    }
+
+    //CAMERA SPEED
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)){
+            camera->setSpeed(0.1f);
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+            camera->setSpeed(0.5f);
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+            camera->setSpeed(1.0f);
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+            camera->setSpeed(2.0f);
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
+            camera->setSpeed(4.0f);
+    }
+
+    //ELEVATION SPEED
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::E)){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+            elevationScale += 0.005f;
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+            elevationScale -= 0.005f;
+        }
+
+        if (elevationScale > 8.f)
+            elevationScale = 8.f;
+        else if(elevationScale < 0.2f)
+            elevationScale  = 0.2f;
 
 
+        //cursorLight->setDiffuseColor(cursorLight->getLightProperties().diffuse + );
+        //cursorLight->setSpecularColor(cursorLight->getLightProperties().specular + );
+    }
 
+        //ELEVATION SPEED
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+            elevationRadiusScale += 0.1f;
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+            elevationRadiusScale -= 0.1f;
+        }
+
+        if (elevationRadiusScale > 10.f)
+            elevationRadiusScale = 10.f;
+        else if(elevationRadiusScale < 0.1f)
+            elevationRadiusScale  = 0.1f;
+
+
+        //
+        //cursorLight->setSpecularColor(cursorLight->getLightProperties().specular + );
+    }
+
+    glm::vec3 newAmbient(elevationScale, 0.f, elevationRadiusScale*0.618033f);
+    cursorLight->setAmbientColor(newAmbient);
+
+    glm::vec3 newDiffuse(0.f, 0.f, elevationRadiusScale);
+    cursorLight->setDiffuseColor(newDiffuse);
 }
 
 void GameState::update(const sf::Time& deltaTime)
 {
-    //std::cout << 1 / deltaTime.asSeconds() << std::endl;
+    std::cout << 1 / deltaTime.asSeconds() << std::endl;
     static float average = 0;
     average += 1 / deltaTime.asSeconds();
     static float counter = 0.001;
@@ -198,20 +296,24 @@ void GameState::update(const sf::Time& deltaTime)
         z /= grid->getSize();
         z+=terrain->getGridSize()/2;
 
-        float y = terrain->getHeight(glm::vec2(x,z)) / 256;
+        float y = terrain->getHeight(glm::vec2(x,z));
         y *= 69;
-
+        //std::cout << y << std::endl;
         glm::vec3 height = glm::vec3(0.0,y,0.0);
         cursorLight->setPosition(cursorLight->getLightProperties().position + height);
-
     }
+
 
 }
 
 void GameState::draw()
 {
     renderer.render();
-
     parent->getWindow().display();
+}
+
+GameState::~GameState()
+{
+    delete parent;
 }
 

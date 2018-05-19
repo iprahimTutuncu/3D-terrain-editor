@@ -35,7 +35,7 @@ bool Shadow::init()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
     setNearPlane(1.0);
-    setFarPlane(14.5);
+    setFarPlane(30.5);
 
     p_shaderDepth     = RessourceManager::ShaderManager::get("media/shader/depthBased/depthBased.vert", "media/shader/depthBased/depthBased.frag");
     p_shaderShadowMap = RessourceManager::ShaderManager::get("media/shader/shadowMap/shadowMap.vert"  , "media/shader/shadowMap/shadowMap.frag");
@@ -62,11 +62,11 @@ void Shadow::update(DirectionalLight& dl, Camera& cam)
     float hnear = 2*tan(glm::radians(FOV)) * cam.getNearPlane();
     float wnear = hnear * aspectRatio;
 
-    float hfar  = 2*tan(glm::radians(FOV)) * cam.getFarPlane();
+    float hfar  = 2*tan(glm::radians(FOV)) * getFarPlane();
     float wfar  = hfar * aspectRatio;
 
     glm::vec3 centerNear = cam.getPosition() + lightDir * cam.getNearPlane();
-    glm::vec3 centerFar  = cam.getPosition() + lightDir * cam.getFarPlane();
+    glm::vec3 centerFar  = cam.getPosition() + lightDir * getFarPlane();
 
     glm::vec3 nearTopLeft     = centerNear + cam.getUp() * (hnear/2.0f) - right * (wnear/2.0f);
     glm::vec3 nearTopRight    = centerNear + cam.getUp() * (hnear/2.0f) + right * (wnear/2.0f);
@@ -135,7 +135,7 @@ void Shadow::setCamera(Camera& camera)
 {
     cameraPos = camera.getPosition();
     cameraFront = camera.getFront();
-    setFarPlane(camera.getFarPlane());
+    //setFarPlane(camera.getFarPlane());
 }
 
 void Shadow::setNearPlane(float near_plane)
@@ -196,7 +196,7 @@ void Shadow::endDraw()
 
 }
 
-void Shadow::drawScreen()
+void Shadow::drawScreen(GLuint tex) // a effacer
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -208,7 +208,7 @@ void Shadow::drawScreen()
 
     //bind la texture a affficher
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, fbo.getTextureDepthBuffer(0));
+    glBindTexture(GL_TEXTURE_2D, tex);
 
     //initialiser et bien effacer l'ecran
     glViewport(0,0, 1024, 1024);

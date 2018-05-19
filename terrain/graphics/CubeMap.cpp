@@ -77,7 +77,6 @@ void CubeMap::setFace(FACE face, std::string fileName)
 {
     textures[static_cast<int>(face)] = fileName;
 
-
     glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
     sf::Image image;

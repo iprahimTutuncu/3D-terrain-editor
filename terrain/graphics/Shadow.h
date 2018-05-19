@@ -41,7 +41,7 @@ class Shadow
         void beginDraw();
         void endDraw();
 
-        void drawScreen();
+        void drawScreen(GLuint tex);
 
         ~Shadow();
 

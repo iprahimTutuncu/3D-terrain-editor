@@ -20,7 +20,7 @@ void Grid::init(int gridSize, float tileSize)
     for(int x = 0; x < gridSize; x++)
         for(int z = 0; z < gridSize; z++){
             positions[x * gridSize + z] = glm::vec3((x * tileSize) - gridSize/2, 0.0f, z * tileSize - gridSize/2);
-            texels[x * gridSize + z] = glm::vec2(x%2,z%2);
+            texels[x * gridSize + z] = glm::vec2(float(x)/gridSize,float(z)/gridSize);
         }
     unsigned int index = 0;
 

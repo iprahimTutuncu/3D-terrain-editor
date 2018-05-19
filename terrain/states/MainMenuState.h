@@ -13,6 +13,9 @@ class MainMenuState : public BaseState
         void event() override;
         void update(const sf::Time &deltaTime) override;
         void draw() override;
+
+        ~MainMenuState();
+
     private:
         sf::RenderWindow window;
 };

@@ -44,13 +44,14 @@ uniform sampler2D depth_texture;
 uniform vec3 eyePosition;
 
 in float outHeight;
+in float outTexHeight;
 #define NUM_LIGHT 4
 uniform LightProperties light[NUM_LIGHT];
 
 #define NUM_TEXTURE_TERRAIN 10
 uniform MaterialProperties materials[NUM_TEXTURE_TERRAIN];
-uniform float     affected_normal_levels[NUM_TEXTURE_TERRAIN];
 uniform int       num_texture_size;
+
 
 vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,vec3 diffuse_color,vec3 specular_color);
 vec3 directionalLight(LightProperties light, vec3 normal,vec3 eyeDir,vec3 diffuse_color,vec3 specular_color);
@@ -63,9 +64,14 @@ float lv = 0;
 void main()
 {
 
+    //A UTILISER POUR LINTERPOLATION DES TEXTURES!
     vec3 normal     = normalize(inVertex.normal);
+
+    //A UTILISER POUR LA COULEUR EN LIEN AVEC LA LUMIERE!
+    // A MODIFIER: enfaite, modifier la nm selon le materiel courrant
     vec3 rgb_normal = normalize(texture(materials[0].texture_normalMap, inVertex.texel).rgb * 2.0 - 1.0);
-    vec3 eyeDir     = normalize(eyePosition - inVertex.position);
+
+    vec3 eyeDir     = normalize(inVertex.tangentViewPosition - inVertex.position);
     vec3 result = vec3(0.0);
     vec3 c1 = vec3(0.2,0.5,1.0);
     vec3 c2 = vec3(0.6,0.05,0.0);
@@ -73,18 +79,11 @@ void main()
     //VARIABLES LIEES AUX TEXTURAGES DU TERRAIN
     float weight = 1.0;
     int lvMin = 0;
-    int lvMax = 0;
+    int lvMax = 1;
     float t = normal.y;
 
-    //INTERPOLATION DES TEXTURES AVEC LES NORMALES
-    for(int i = 0; affected_normal_levels[i] < t && i < num_texture_size; i++)
-        lvMin = 0;
-
-    for(int i = num_texture_size; affected_normal_levels[i] > t && i > 0; i--)
-        lvMax = 1;
-
-    float lv1 = 0.3;//affected_normal_levels[lvMin];
-    float lv2 = 1.0;//affected_normal_levels[lvMax];
+    float lv1 = 0.0;
+    float lv2 = 1.0;
 
     lv = pow(1-t, 2) * lv1 + 2*(1-t) * t * weight + 2*t*lv2;
 
@@ -94,18 +93,45 @@ void main()
     if(!gl_FrontFacing)
         normal = -normal;
 
-    lvMin = 0;
-    lvMax = 1;
+    //mix les 2 texture de gazon pour mix ensuite ici
+    //use outTexHeight
+    vec3 mixedFLoor_diff;
+    vec3 mixedFLoor_spec;
+    vec3 diffuse_color;
+    vec3 specular_color;
 
-    const int zero = 0;
-    const int un = 1;
-    vec3 diffuse_color  = mix(texture(materials[zero].texture_diffuse , inVertex.texel).rgb,
-                              texture(materials[un].texture_diffuse , inVertex.texel).rgb,
-                              lv);
+    float d = length(inVertex.position - eyePosition);
+    if(d > 200.f)
+        d = 20;
+    else if(d > 100.f)
+        d = 40.f;
+    else if(d > 90.f)
+        d = 80.f;
+    else if(d > 60.f)
+        d = 160.f;
+    else if(d > 30.f)
+        d = 320.f;
+    else if(d > 20.f)
+        d = 375.f;
+    else
+        d = 512.f;
+    mixedFLoor_diff = mix(texture(materials[1].texture_diffuse , inVertex.texel * d).rgb,
+                              texture(materials[2].texture_diffuse , inVertex.texel * d).rgb,
+                              outTexHeight);
 
-    vec3 specular_color = mix(texture(materials[zero].texture_specular, inVertex.texel).rgb,
-                              texture(materials[un].texture_specular, inVertex.texel).rgb,
-                              lv);
+    mixedFLoor_spec = mix(texture(materials[1].texture_specular, inVertex.texel * d).rgb,
+                              texture(materials[2].texture_specular, inVertex.texel * d).rgb,
+                              outTexHeight);
+
+    diffuse_color = mix(texture(materials[0].texture_diffuse , inVertex.texel * d).rgb,
+                        mixedFLoor_diff,
+                        lv);
+
+    specular_color =  mix(texture(materials[0].texture_specular, inVertex.texel * d).rgb,
+                        mixedFLoor_spec,
+                        lv);
+
+    //diffuse_color += vec3(outTexHeight,0,0);
 
     //AJOUT DES LUMIERES
     for(int i = 0; i < NUM_LIGHT; i++)
@@ -124,7 +150,7 @@ void main()
 vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,vec3 diffuse_color,vec3 specular_color){
 
     if(light.isCursor){
-        vec3 lightDir = light.position - position;
+        vec3 lightDir =  light.position - position;
         float dist = length(lightDir);
         lightDir = lightDir / dist;
 
@@ -154,7 +180,7 @@ vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,v
 
         float min_length = 1.0 / (light.attenuationLinear + light.attenuationQuadratic);
 
-        if(dist < min_length + 0.04 && dist > min_length)
+        if(dist < min_length + 0.1 && dist > min_length)
             return vec3(0.0, 0.0, 1.0);
         else if(dist > min_length + 0.04)
             return vec3(0.0);

@@ -29,7 +29,7 @@ void MainMenuState::event()
         if (event.type == sf::Event::Closed){
             window.close();
             parent->getWindow().setVisible(true);
-            parent->getWindow().display(); // ??? si je le retire, ca crash :/
+            parent->getWindow().display(); // ??? si je le retire, ca crash :/ | edit: 30 avril, pas crash, tout est bon. [insecure]
             parent->pushState(new GameState(parent));
         }
     }
@@ -46,4 +46,10 @@ void MainMenuState::draw()
     window.display();
 
 }
+
+MainMenuState::~MainMenuState()
+{
+    delete parent;
+}
+
 

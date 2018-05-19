@@ -8,7 +8,7 @@ class FrameBuffer
 {
     public:
         FrameBuffer();
-        FrameBuffer(int w, int h);
+        FrameBuffer(const int &w,const int &h);
 
         void init();
         bool isUsable();
@@ -16,6 +16,7 @@ class FrameBuffer
         void setRenderBuffer(GLenum internalformat);
         GLuint genTextureColorBuffer();
         GLuint genTextureDepthShadowBuffer();
+        GLuint genTextureDepthWaterBuffer();
 
         void bind();
         void unBind();

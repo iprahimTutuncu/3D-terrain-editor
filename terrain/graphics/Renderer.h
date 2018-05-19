@@ -13,6 +13,7 @@
 #include "Shadow.h"
 #include "Grid.h"
 #include "Line3D.h"
+#include "../core/Water.h"
 #include "../core/Terrain.h"
 
 enum class RenderMode {FILL,
@@ -53,7 +54,7 @@ class Renderer
         void enableShadowMap(bool enable);
 
         void setTerrain(std::shared_ptr<Terrain> terrain);
-
+        void setWater(std::shared_ptr<Water> water);
         void render();
 
     private:
@@ -63,6 +64,7 @@ class Renderer
         RenderMode currRenderMode;
 
         std::shared_ptr<Terrain> terrain;
+        std::shared_ptr<Water> water;
 
         std::shared_ptr<Camera> camera;
         std::shared_ptr<DirectionalLight> directionalLight;

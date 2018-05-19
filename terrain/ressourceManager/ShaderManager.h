@@ -13,6 +13,8 @@ namespace RessourceManager{
         public:
             ShaderManager();
             static std::shared_ptr<Shader> get(const std::string& vertPath, const std::string& fragPath);
+            static std::shared_ptr<Shader> get(const std::string& vertPath, const std::string& fragPath,
+                                               const std::string& tescPath, const std::string& tesePath);
             static void removeUnused();
         private:
             static std::unordered_map<std::string, std::shared_ptr<Shader>> p_shaders;

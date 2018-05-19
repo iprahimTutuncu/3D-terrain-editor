@@ -16,6 +16,8 @@
 #include "BaseState.h"
 #include "../core/MouseRay.h"
 #include "../core/CollisionHandler.h"
+#include "../core/Water.h"
+#include "../vendor/imgui.h"
 
 class GameState : public BaseState
 {
@@ -26,6 +28,7 @@ class GameState : public BaseState
         void update(const sf::Time &deltaTime) override;
         void draw() override;
 
+        ~GameState();
     private:
         std::shared_ptr<Camera> camera;
         std::shared_ptr<Grid> grid;
@@ -33,11 +36,14 @@ class GameState : public BaseState
         std::shared_ptr<DirectionalLight> sun;
         std::shared_ptr<Line3D> line3D; //debug purpose
         std::shared_ptr<Terrain> terrain;
+        std::shared_ptr<Water> water;
 
         CollisionHandler collisionHandler;
         SceneManager sceneManager;
         Renderer renderer;
         MouseRay mouseRay;
+
+        bool my_tool_active{true};
 
 };
 

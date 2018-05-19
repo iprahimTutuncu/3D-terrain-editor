@@ -67,6 +67,99 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
     glDeleteShader(fragShader);
 
 }
+Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* tessellationControlPath, const GLchar* tessellationEvaluationPath)
+{
+    GLuint vertexShader;
+    GLuint fragShader;
+    GLuint tessCShader;
+    GLuint tessEShader;
+
+    GLint success;
+    string temp;
+    const GLchar* adapter[1];
+    char infoLog[512];
+    lightCounter = 0;
+
+    //vertex shader
+    temp = readFile(vertexPath);
+    adapter[0] = temp.c_str();
+
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, adapter, nullptr);
+    glCompileShader(vertexShader);
+
+    // retourner un messafe d'erreur s'il y a lieu
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "Erreur: dans compilation vertex shader " << vertexPath << "\n" << infoLog << std::endl;
+    }
+
+    //fragment shader
+    temp = readFile(fragmentPath);
+    adapter[0] = temp.c_str();
+
+    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragShader,1, adapter, nullptr);
+    glCompileShader(fragShader);
+
+
+    // retourner un messafe d'erreur s'il y a lieu
+    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(fragShader, 512, NULL, infoLog);
+        std::cout << "Erreur: dans compilation fragment shader " << fragmentPath << "\n" << infoLog << std::endl;
+    }
+
+    ID = glCreateProgram();
+
+    //tessellation control shader
+    temp = readFile(tessellationControlPath);
+    adapter[0] = temp.c_str();
+
+    tessCShader = glCreateShader(GL_TESS_CONTROL_SHADER);
+    glShaderSource(tessCShader,1, adapter, nullptr);
+    glCompileShader(tessCShader);
+
+
+    // retourner un messafe d'erreur s'il y a lieu
+    glGetShaderiv(tessCShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(tessCShader, 512, NULL, infoLog);
+        std::cout << "Erreur: dans compilation tesselation controle shader " << tessellationControlPath << "\n" << infoLog << std::endl;
+    }
+
+    //tessellation evaluation shader
+    temp = readFile(tessellationEvaluationPath);
+    adapter[0] = temp.c_str();
+
+    tessEShader = glCreateShader(GL_TESS_EVALUATION_SHADER);
+    glShaderSource(tessEShader,1, adapter, nullptr);
+    glCompileShader(tessEShader);
+
+
+    // retourner un messafe d'erreur s'il y a lieu
+    glGetShaderiv(tessEShader, GL_COMPILE_STATUS, &success);
+    if(!success){
+        glGetShaderInfoLog(tessEShader, 512, NULL, infoLog);
+        std::cout << "Erreur: dans compilation tesselation evaluationshader " << tessellationEvaluationPath << "\n" << infoLog << std::endl;
+    }
+
+
+    ID = glCreateProgram();
+
+    glAttachShader(ID, vertexShader);
+    glAttachShader(ID, fragShader);
+    glAttachShader(ID, tessCShader);
+    glAttachShader(ID, tessEShader);
+
+    glLinkProgram(ID);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragShader);
+}
+
+
 
 void Shader::use()
 {
@@ -138,5 +231,10 @@ void Shader::setMaterial(MaterialProperties material)
 {
     setVec3("material.emission", material.emission);
     setFloat("material.shininess", material.shininess);
+}
+
+short Shader::getAmountOfLight()
+{
+    return lightCounter;
 }
 

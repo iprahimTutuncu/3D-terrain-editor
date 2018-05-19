@@ -30,6 +30,9 @@ class Camera: public SceneComponent
         float getRatio();
         float getFOV();
 
+        void recalcView();
+        void inversePitch();
+
 
         void setSpeed(float spd);
         void setPosition(glm::vec3 position);

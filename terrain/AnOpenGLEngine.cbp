@@ -73,6 +73,8 @@
 		<Unit filename="core/SceneNode.h" />
 		<Unit filename="core/Terrain.cpp" />
 		<Unit filename="core/Terrain.h" />
+		<Unit filename="core/Water.cpp" />
+		<Unit filename="core/Water.h" />
 		<Unit filename="graphics/Camera.cpp" />
 		<Unit filename="graphics/Camera.h" />
 		<Unit filename="graphics/CubeMap.cpp" />
@@ -120,7 +122,10 @@
 		<Unit filename="media/shader/skybox/skybox.frag" />
 		<Unit filename="media/shader/skybox/skybox.vert" />
 		<Unit filename="media/shader/terrain/terrain.frag" />
+		<Unit filename="media/shader/terrain/terrain.tesc" />
 		<Unit filename="media/shader/terrain/terrain.vert" />
+		<Unit filename="media/shader/water/water.frag" />
+		<Unit filename="media/shader/water/water.vert" />
 		<Unit filename="ressourceManager/ShaderManager.cpp" />
 		<Unit filename="ressourceManager/ShaderManager.h" />
 		<Unit filename="ressourceManager/TextureManager.cpp" />
@@ -130,6 +135,15 @@
 		<Unit filename="states/GameState.h" />
 		<Unit filename="states/MainMenuState.cpp" />
 		<Unit filename="states/MainMenuState.h" />
+		<Unit filename="vendor/imconfig.h" />
+		<Unit filename="vendor/imgui.cpp" />
+		<Unit filename="vendor/imgui.h" />
+		<Unit filename="vendor/imgui_demo.cpp" />
+		<Unit filename="vendor/imgui_draw.cpp" />
+		<Unit filename="vendor/imgui_internal.h" />
+		<Unit filename="vendor/stb_rect_pack.h" />
+		<Unit filename="vendor/stb_textedit.h" />
+		<Unit filename="vendor/stb_truetype.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />

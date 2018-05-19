@@ -8,7 +8,7 @@ FrameBuffer::FrameBuffer():
 
 }
 
-FrameBuffer::FrameBuffer(int w, int h):
+FrameBuffer::FrameBuffer(const int &w,const int &h):
     ID(0),
     width(w),
     height(h),
@@ -31,11 +31,12 @@ void FrameBuffer::init()
 }
 
 bool FrameBuffer::isUsable(){
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+    auto fbostatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(fbostatus != GL_FRAMEBUFFER_COMPLETE){
         glDeleteFramebuffers(1, &ID);
         glDeleteRenderbuffers(1, &renderBufferID);
         colorBufferIDs.clear();
-        std::cout << "ERROR::FRAMEBUFFER: Framebuffer incomplet!" << std::endl;
+        std::cout << "ERROR::FRAMEBUFFER: Framebuffer incomplet: " << fbostatus << std::endl;
         return false;
     }
 
@@ -60,6 +61,7 @@ GLuint FrameBuffer::genTextureColorBuffer()
     GLuint textureColorID;
     glGenTextures(1, &textureColorID);
     glBindTexture(GL_TEXTURE_2D, textureColorID);
+    std::cout << "width :" << width << ", height :" << height << std::endl;
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -105,7 +107,42 @@ GLuint FrameBuffer::genTextureDepthShadowBuffer()
 
     unBind();
     return textureDepthBufferID;
+
 }
+
+GLuint FrameBuffer::genTextureDepthWaterBuffer()
+{
+    bind();
+
+    GLuint textureDepthBufferID;
+
+    glGenTextures(1, &textureDepthBufferID);
+    glBindTexture(GL_TEXTURE_2D, textureDepthBufferID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    //filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //border
+    float couleurExtremite[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, couleurExtremite);
+
+    //wrapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureDepthBufferID, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    depthBufferIDs.emplace_back(textureDepthBufferID);
+    std::cout << depthBufferIDs.back() << std::endl;
+
+    unBind();
+    return textureDepthBufferID;
+}
+
 
 void FrameBuffer::bind()
 {

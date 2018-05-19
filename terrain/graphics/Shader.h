@@ -20,6 +20,7 @@ class Shader
         GLuint ID;
 
         Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+        Shader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* tessellationControlPath, const GLchar* tessellationEvaluationPath);
         void use();
 
         void setBool(const std::string &name, bool value) const;
@@ -30,6 +31,7 @@ class Shader
         void setVec3(const std::string& name, glm::vec3 value) const;
         void addLight(LightProperties light);
         void setMaterial(MaterialProperties material);
+        short getAmountOfLight();
 
     private:
         const short maxLight = 10;

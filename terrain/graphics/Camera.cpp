@@ -68,6 +68,8 @@ void Camera::input_callback(float mouseX, float mouseY)
     view = glm::lookAt(position,
                        position - glm::normalize(front),
                        glm::vec3(0.0f, 1.0f, 0.0f));
+
+
 }
 
 glm::mat4 Camera::getViewProjectionMatrix()
@@ -159,5 +161,27 @@ void Camera::setPosition(glm::vec3 position)
     this->position = position;
 }
 
+void Camera::recalcView()
+{
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    else if(pitch < -89.0f)
+        pitch = -89.0f;
+
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+    view = glm::lookAt(position,
+                       position - glm::normalize(front),
+                       glm::vec3(0.0f, 1.0f, 0.0f));
+
+}
+
+
+void Camera::inversePitch()
+{
+    pitch = -pitch;
+}
 
 
