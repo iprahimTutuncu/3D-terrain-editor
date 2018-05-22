@@ -14,6 +14,8 @@ out out_Vertex{
     vec3 tangentFragPosition;
 } outVertex;
 
+out vec3 outTangent;
+
 uniform mat4 model;
 uniform mat4 modelView;
 uniform mat4 viewProj;
@@ -88,6 +90,8 @@ void main()
     tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
     tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
     tangent = normalize(tangent);
+
+    outTangent = tangent;
 
     vec3 T = normalize(vec3(mat3(transpose(inverse(model))) * tangent));
     vec3 N = normalize(vec3(mat3(transpose(inverse(model))) * nTerrain));

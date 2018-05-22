@@ -19,6 +19,8 @@ class HeightMap
         void addAveragingCircle(int x, int y, float attLinear,float attQuad);
         void addSmoothCircle(int x, int y, float attLinear,float attQuad);
         void addCircleOnTextureMap(float height, int x, int y, float attLinear,float attQuad);
+        void save(const std::string &filePath);
+        void load(const std::string &filePath);
         glm::vec2 getSize();
         ~HeightMap();
     private:

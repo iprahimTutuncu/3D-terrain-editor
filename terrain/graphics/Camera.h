@@ -16,6 +16,7 @@ class Camera: public SceneComponent
         void input_callback(float mouseX, float MouseY);
         void move_forward();
         void move_back();
+        void moveSide(float spd);
         void turn(float speed);
         glm::mat4 getViewProjectionMatrix();
         glm::mat4 getProjectionMatrix();

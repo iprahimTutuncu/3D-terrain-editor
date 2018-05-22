@@ -43,6 +43,7 @@ class GameState : public BaseState
         Renderer renderer;
         MouseRay mouseRay;
 
+        bool isWalkOnly{false};
         bool my_tool_active{true};
 
 };

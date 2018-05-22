@@ -71,10 +71,11 @@ glm::vec3 Terrain::getPosition(unsigned int i, unsigned int j)
     return grid.getPosition(i,j);
 }
 
-void Terrain::addTerrainTexture(const std::string &path_diffuse, const std::string &path_specular, short location)
+void Terrain::addTerrainTexture(const std::string &path_diffuse, const std::string &path_specular, const std::string &path_normal, short location)
 {
     textures.push_back(TextureTerrainData(RessourceManager::TextureManager::get(path_diffuse),
                                           RessourceManager::TextureManager::get(path_specular),
+                                          RessourceManager::TextureManager::get(path_normal),
                                           location));
 
     std::sort(textures.begin(), textures.end(), [](const TextureTerrainData &ttdA, const TextureTerrainData &ttdB){
@@ -82,7 +83,7 @@ void Terrain::addTerrainTexture(const std::string &path_diffuse, const std::stri
     });
 
     for(TextureTerrainData ttd: textures){
-        std::cout << "txture: " << *ttd.textureID_diffuse << ", " << ttd.location << std::endl;
+        std::cout << "txture: " << *ttd.textureID_diffuse << ", " << ttd.location << ", normal " << *ttd.textureID_normal << std::endl;
     }
 }
 std::vector<std::shared_ptr<GLuint>> Terrain::getTerrainTextures()
@@ -91,24 +92,60 @@ std::vector<std::shared_ptr<GLuint>> Terrain::getTerrainTextures()
     for(int i = 0; i < textures.size(); i++){
         texturesID.emplace_back(textures[i].textureID_diffuse);
         texturesID.emplace_back(textures[i].textureID_specular);
+        texturesID.emplace_back(textures[i].textureID_normal);
     }
 
     return texturesID;
 }
 
+void Terrain::loadHeightMap(const std::string& path)
+{
+    heighmap.load(path);
+}
 
+void Terrain::saveHeightMap(const std::string& path)
+{
+    heighmap.save(path);
+}
 
 
 void Terrain::draw(Shader& shader)
 {
+    static float time = 0.01;
+    time += 0.0001;
+    if(time > 1.0){
+        time = 0.0f;
+    }
+
+    shader.use();
+
+    glActiveTexture(GL_TEXTURE12);
+    glBindTexture(GL_TEXTURE_2D, getTextureID());
+
+    glActiveTexture(GL_TEXTURE13);
+    glBindTexture(GL_TEXTURE_2D, getTextureMapID());
+
+    glActiveTexture(GL_TEXTURE14);
+    glBindTexture(GL_TEXTURE_2D, *RessourceManager::TextureManager::get("media/texture/waterDUDV.png"));
+    shader.setInt("DUDV", 14);
+
+    shader.setInt("heightmap", 12);
+    shader.setInt("texturemap", 13);
+    shader.setFloat("elapsedTime", time);
+
     for(int i = 0; i < textures.size() && i < MAX_TEXTURE_ON_MAP; i++){
-        glActiveTexture(GL_TEXTURE0 + *textures[i].textureID_diffuse);
-        shader.setInt("materials[" + std::to_string(i) + "].texture_diffuse", *textures[i].textureID_diffuse);
+        int j = i +1;
+        glActiveTexture(GL_TEXTURE0 + j * 3);
+        shader.setInt("materials[" + std::to_string(i) + "].texture_diffuse", j * 3);
         glBindTexture(GL_TEXTURE_2D, *textures[i].textureID_diffuse);
 
-        glActiveTexture(GL_TEXTURE0 + *textures[i].textureID_specular);
-        shader.setInt("materials[" + std::to_string(i) + "].texture_specular", *textures[i].textureID_specular);
+        glActiveTexture(GL_TEXTURE0 + 1 + j * 3);
+        shader.setInt("materials[" + std::to_string(i) + "].texture_specular", 1 + j * 3);
         glBindTexture(GL_TEXTURE_2D, *textures[i].textureID_specular);
+
+        glActiveTexture(GL_TEXTURE0 + 2 + j * 3);
+        shader.setInt("materials[" + std::to_string(i) + "].texture_normalMap", 2 + j * 3);
+        glBindTexture(GL_TEXTURE_2D, *textures[i].textureID_normal);
     }
 
     grid.draw(shader);

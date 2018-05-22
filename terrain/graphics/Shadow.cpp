@@ -52,7 +52,7 @@ void Shadow::update(DirectionalLight& dl, Camera& cam)
 {
     setDirectionalLight(dl);
     setCamera(cam);
-
+    setFarPlane(cam.getFarPlane());
     glm::mat4 proj;
     glm::mat4 view;
     glm::vec3 right = glm::normalize(glm::cross(cam.getUp(), lightDir));

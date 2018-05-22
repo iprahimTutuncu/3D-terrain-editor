@@ -11,7 +11,10 @@ Water::Water():
 
 void Water::init(float length)
 {
-    grid.init(512, 1.f);
+    grid.init(2.f, 512.f);
+    glm::mat4 toCenterMatrix(1.0);
+    toCenterMatrix = glm::translate(toCenterMatrix, glm::vec3(-512.0/2, 0.0, -512.0/2));
+    grid.setWorldTransform(grid.getWorldTransform() * toCenterMatrix);
     height = grid.getPosition(1,1).y;
 
     //load texture
@@ -30,6 +33,7 @@ void Water::init(float length)
     reflectionFBO.unBind();
 
     //GENERATION DE LA TEXTURE DE LA REFRACTION
+    /*
     refractionFBO.init();
     refractionFBO.bind();
 
@@ -39,15 +43,25 @@ void Water::init(float length)
         std::cout << "refractionFBO ready to use!" << std::endl;
 
     refractionFBO.unBind();
+    */
 
+    refractionFBO.init();
+    refractionFBO.bind();
 
+    std::cout << "gen refraction..." << std::endl;
+    refractionFBO.setRenderBuffer(GL_DEPTH24_STENCIL8);
+    refractionTexID = refractionFBO.genTextureColorBuffer();
+    refractionDepthTexID = refractionFBO.genTextureDepthWaterBuffer();
+    if(refractionFBO.isUsable())
+        std::cout << "refractionFBO ready to use!" << std::endl;
+
+    refractionFBO.unBind();
 
 }
 
 
 void Water::bindReflection()
 {
-
     reflectionFBO.bind();
 }
 
@@ -70,6 +84,12 @@ GLuint Water::getReflectionTexture()
 GLuint Water::getRefractionTexture()
 {
     return refractionFBO.getTextureColorBuffer(0);
+
+}
+
+GLuint Water::getRefractionDepthTexture()
+{
+    return refractionFBO.getTextureDepthBuffer(0);
 }
 
 Water::~Water()
@@ -111,6 +131,9 @@ void Water::draw(Shader& shader)
     glActiveTexture(GL_TEXTURE9);
     glBindTexture(GL_TEXTURE_2D, *normalmap);
 
+    glActiveTexture(GL_TEXTURE10);
+    glBindTexture(GL_TEXTURE_2D, this->getRefractionDepthTexture());
+
     static float time = 0.01;
     time += 0.001;
     if(time > 1.0){
@@ -120,6 +143,8 @@ void Water::draw(Shader& shader)
     shader.use();
     shader.setInt("waterReflection", 3);
     shader.setInt("waterRefraction", 7);
+    shader.setInt("waterRefractionDepth", 10);
+    shader.setFloat("far_plane", 1000.f);
     shader.setInt("DUDV", 8);
     shader.setInt("normalmap", 9);
     shader.setFloat("elapsedTime", time);

@@ -12,6 +12,7 @@ in out_Vertex{
     vec3 tangentFragPosition;
 } inVertex;
 
+in vec3 outTangent;
 
 struct LightProperties{
     bool isEnable;
@@ -41,7 +42,9 @@ struct MaterialProperties{
 };
 
 uniform sampler2D depth_texture;
+uniform sampler2D DUDV;
 uniform vec3 eyePosition;
+uniform float elapsedTime;
 
 in float outHeight;
 in float outTexHeight;
@@ -57,9 +60,13 @@ vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,v
 vec3 directionalLight(LightProperties light, vec3 normal,vec3 eyeDir,vec3 diffuse_color,vec3 specular_color);
 vec3 offset_lookup(sampler2D map, vec3 loc, vec2 offset, vec2 texelSize);
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir);
+float LinearizeDepth(float depth);
 
 //variable globale
 float lv = 0;
+
+float far_plane = 1000.f;
+float near_plane = 0.1f;
 
 void main()
 {
@@ -67,9 +74,6 @@ void main()
     //A UTILISER POUR LINTERPOLATION DES TEXTURES!
     vec3 normal     = normalize(inVertex.normal);
 
-    //A UTILISER POUR LA COULEUR EN LIEN AVEC LA LUMIERE!
-    // A MODIFIER: enfaite, modifier la nm selon le materiel courrant
-    vec3 rgb_normal = normalize(texture(materials[0].texture_normalMap, inVertex.texel).rgb * 2.0 - 1.0);
 
     vec3 eyeDir     = normalize(inVertex.tangentViewPosition - inVertex.position);
     vec3 result = vec3(0.0);
@@ -102,19 +106,33 @@ void main()
 
     float d = length(inVertex.position - eyePosition);
     if(d > 200.f)
-        d = 20;
+        d = 30;
     else if(d > 100.f)
         d = 40.f;
     else if(d > 90.f)
-        d = 80.f;
+        d = 50.f;
     else if(d > 60.f)
-        d = 160.f;
+        d = 90.f;
     else if(d > 30.f)
-        d = 320.f;
+        d = 120.f;
     else if(d > 20.f)
-        d = 375.f;
+        d = 200.f;
     else
-        d = 512.f;
+        d = 256.f;
+
+    //A UTILISER POUR LA COULEUR EN LIEN AVEC LA LUMIERE!
+    // A MODIFIER: enfaite, modifier la nm selon le materiel courrant
+    vec3 rgb_normal0 = normalize(texture(materials[0].texture_normalMap, inVertex.texel * d).rgb * 2.0 - 1.0);
+    vec3 rgb_normal1 = normalize(texture(materials[1].texture_normalMap, inVertex.texel * d).rgb * 2.0 - 1.0);
+    vec3 rgb_normal2 = normalize(texture(materials[2].texture_normalMap, inVertex.texel * d).rgb * 2.0 - 1.0);
+
+    vec3 bitangent = normalize(cross(outTangent, normal));
+    mat3 TBN = mat3(bitangent,normal,outTangent);
+
+    rgb_normal0 = normalize(rgb_normal0 * TBN);
+    rgb_normal1 = normalize(rgb_normal1 * TBN);
+    rgb_normal2 = normalize(rgb_normal2 * TBN);
+
     mixedFLoor_diff = mix(texture(materials[1].texture_diffuse , inVertex.texel * d).rgb,
                               texture(materials[2].texture_diffuse , inVertex.texel * d).rgb,
                               outTexHeight);
@@ -123,6 +141,8 @@ void main()
                               texture(materials[2].texture_specular, inVertex.texel * d).rgb,
                               outTexHeight);
 
+    vec3 mixedFLoor_normalMap = normalize(mix(rgb_normal1, rgb_normal2, outTexHeight));
+
     diffuse_color = mix(texture(materials[0].texture_diffuse , inVertex.texel * d).rgb,
                         mixedFLoor_diff,
                         lv);
@@ -130,6 +150,7 @@ void main()
     specular_color =  mix(texture(materials[0].texture_specular, inVertex.texel * d).rgb,
                         mixedFLoor_spec,
                         lv);
+    vec3 rgb_normal = normalize(mix(rgb_normal0, mixedFLoor_normalMap, lv));
 
     //diffuse_color += vec3(outTexHeight,0,0);
 
@@ -137,15 +158,32 @@ void main()
     for(int i = 0; i < NUM_LIGHT; i++)
         if(light[i].isEnable)
             if(light[i].isPoint)
-                result += pointLight(light[i], normal, inVertex.position, eyeDir, diffuse_color, specular_color);
+                result += pointLight(light[i], rgb_normal, inVertex.position, eyeDir, diffuse_color, specular_color);
             else if(light[i].isDirection)
-                result += directionalLight(light[i], normal, eyeDir, diffuse_color, specular_color);
+                result += directionalLight(light[i], rgb_normal, eyeDir, diffuse_color, specular_color);
 
+    float waterLevel = 5.f;
+    far_plane = 75.f;
+    float floorDist = LinearizeDepth(gl_FragCoord.z)  / far_plane;
+    float waveStrength = 0.1;
 
+    vec2 dudv = (texture(DUDV, inVertex.texel + vec2(elapsedTime, 0.0f)).rg*2.0-1.0) * waveStrength;
+
+    vec3 underWaterColor = vec3(0.0,0.1,0.2);
+    if(inVertex.position.y < waterLevel && eyePosition.y < waterLevel){
+        result *= 1.0f - floorDist;
+        result = mix(result, underWaterColor, floorDist) + (vec3(dudv.x) + vec3(0.f, dudv)) * 0.5;
+
+    }
 
     FragColor = vec4(result, 1.0);
 }
 
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // Back to NDC
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
+}
 
 vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,vec3 diffuse_color,vec3 specular_color){
 
@@ -159,7 +197,7 @@ vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,v
 
         //specular
         vec3 halfwayDir = normalize(lightDir + eyeDir);
-        float spec = pow(max(dot(normal, halfwayDir), 0.0), 256);
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), 32);
 
         //light with texture map
         vec3 ambient  = light.ambient  *        diffuse_color;
@@ -198,7 +236,7 @@ vec3 pointLight(LightProperties light, vec3 normal, vec3 position, vec3 eyeDir,v
 
         //specular
         vec3 halfwayDir = normalize(lightDir + eyeDir);
-        float spec = pow(max(dot(normal, halfwayDir), 0.0), 256);
+        float spec = pow(max(dot(normal, halfwayDir), 0.0), 32);
 
         //light with texture map
         vec3 ambient  = light.ambient  *        diffuse_color;

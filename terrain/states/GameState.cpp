@@ -1,6 +1,7 @@
 #include "GameState.h"
 #include "glm/ext.hpp"
 
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
 using namespace std;
@@ -14,9 +15,9 @@ GameState::GameState(Game* parent)
     this->parent = parent;
 
     terrain = std::make_shared<Terrain>("media/texture/testHM.png", "media/texture/testHM.png");
-    terrain->addTerrainTexture("media/models/tree/grass.png", "media/models/tree/grass.png" , 2);
-    terrain->addTerrainTexture("media/models/tree/rock.png", "media/models/tree/rockSpec.png", 1);
-    terrain->addTerrainTexture("media/models/tree/snow.png", "media/models/tree/snow.png" , 3);
+    terrain->addTerrainTexture("media/texture/terrain/grass_green_d.jpg", "media/texture/terrain/grass_ground_s.jpg","media/texture/terrain/grass_green_n.jpg" , 2);
+    terrain->addTerrainTexture("media/texture/terrain/jungle_stone_d.jpg", "media/texture/terrain/jungle_stone_s.jpg", "media/texture/terrain/jungle_stone_n.jpg", 1);
+    terrain->addTerrainTexture("media/texture/terrain/desert_sand_d.jpg", "media/texture/terrain/desert_sand_s.jpg" , "media/texture/terrain/desert_sand_n.jpg", 3);
 
     water = std::make_shared<Water>();
     water->setHeight(5.0f);
@@ -34,7 +35,7 @@ GameState::GameState(Game* parent)
 
     std::shared_ptr<Model> m1 = sceneManager.createModel("media/models/nanosuit/nanosuit.obj");
     std::shared_ptr<Model> m2 = sceneManager.createModel("media/models/tree/treeHR.obj");
-    line3D = sceneManager.createLine3D(glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,2.0,0.0), glm::vec3(1.0,0.0,0.0));
+    //line3D = sceneManager.createLine3D(glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,2.0,0.0), glm::vec3(1.0,0.0,0.0));
 
     grid = sceneManager.createGrid(terrain->getGridSize()/10, 10.0);
     cursorLight = sceneManager.createPointLight();
@@ -53,12 +54,12 @@ GameState::GameState(Game* parent)
     //n->setScale(glm::vec3(0.2, 0.2, 0.2));
     n->setPosition(glm::vec3(0.0,0.0,0.0));
 
-    n3->addComponent(m2);
+    //n3->addComponent(m2);
     //n3->addComponent(p2);
-    n3->setPosition(glm::vec3(0.0,1.0,0.0));
+    //n3->setPosition(glm::vec3(0.0,1.0,0.0));
+    //n3->setScale(glm::vec3(0.2,0.2,0.2));
 
     n2->addComponent(cursorLight);
-    n2->addComponent(line3D);
 
     sceneManager.getRootNode()->addChild(n);
     sceneManager.getRootNode()->addChild(n3);
@@ -95,9 +96,11 @@ void GameState::event()
     {
         if (event.type == sf::Event::Closed){
             parent->getWindow().close();
+            exit(0);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
             parent->getWindow().close();
+            exit(0);
         }
         if(event.type == sf::Event::MouseWheelMoved){
             float multY = 1.0;
@@ -112,21 +115,61 @@ void GameState::event()
                                         cursorLight->getLightProperties().attenuationQuadratic * multY);
         }
     }
-    static float prevMouseY = 0;
 
     float mousex = sf::Mouse::getPosition(parent->getWindow()).x;
     float mousey = sf::Mouse::getPosition(parent->getWindow()).y;
 
-    float changeInYaxis = prevMouseY - mousey;
-    prevMouseY = mousey;
-
     mouseRay.update(mousex, mousey);
 
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) &&
+       sf::Keyboard::isKeyPressed(sf::Keyboard::O)){
+        isWalkOnly = true;
+    }
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) &&
+       sf::Keyboard::isKeyPressed(sf::Keyboard::I)){
+        isWalkOnly = false;
+    }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
         camera->move_forward();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        camera->move_back();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)){
+                terrain->saveHeightMap("heightmap0.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)){
+                terrain->saveHeightMap("heightmap1.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)){
+                terrain->saveHeightMap("heightmap2.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)){
+                terrain->saveHeightMap("heightmap3.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)){
+                terrain->saveHeightMap("heightmap4.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)){
+                terrain->saveHeightMap("heightmap5.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)){
+                terrain->saveHeightMap("heightmap6.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)){
+                terrain->saveHeightMap("heightmap7.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)){
+                terrain->saveHeightMap("heightmap8.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)){
+                terrain->saveHeightMap("heightmap9.txt");
+            }else{
+                std::cout << "Not a valid input for saving" << std::endl;
+            }
+        }else
+            camera->move_back();
+    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
         camera->turn(-2);
     }
@@ -134,6 +177,42 @@ void GameState::event()
         camera->turn(2);
     }
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)){
+                terrain->loadHeightMap("heightmap0.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)){
+                terrain->loadHeightMap("heightmap1.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)){
+                terrain->loadHeightMap("heightmap2.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)){
+                terrain->loadHeightMap("heightmap3.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)){
+                terrain->loadHeightMap("heightmap4.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)){
+                terrain->loadHeightMap("heightmap5.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)){
+                terrain->loadHeightMap("heightmap6.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)){
+                terrain->loadHeightMap("heightmap7.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)){
+                terrain->loadHeightMap("heightmap8.txt");
+            }
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)){
+                terrain->loadHeightMap("heightmap9.txt");
+            }else{
+                std::cout << "Not a valid input for loading" << std::endl;
+            }
+        }
+    }
 
     camera->input_callback(mousex, mousey);
 
@@ -256,27 +335,60 @@ void GameState::event()
 
     glm::vec3 newDiffuse(0.f, 0.f, elevationRadiusScale);
     cursorLight->setDiffuseColor(newDiffuse);
+
+
 }
 
 void GameState::update(const sf::Time& deltaTime)
 {
+
     std::cout << 1 / deltaTime.asSeconds() << std::endl;
     static float average = 0;
     average += 1 / deltaTime.asSeconds();
+    static int counting = 0;
+    counting++;
+    std::cout << "average: " << average/counting << std::endl;
     static float counter = 0.001;
     counter+= 0.01;
 
-    //SUN MOVE!
-    sun->setDirection(glm::vec3(cos(counter), 0.5, sin(counter)));
 
-    renderer.update(deltaTime);
+    int x = 0;
+    int z = 0;
+    float terrainY = 0.f;
+    if(isWalkOnly){
+        float terrainSize = terrain->getGridSize();
+
+        for(float i = -0.5; i <= 0.5; i+=0.05){
+            for(float j = -0.5; j <= 0.5; j+=0.05){
+                x  = (camera->getPosition().x+i)  * terrainSize;
+                x /= terrainSize;
+                x += terrainSize/2;
+
+                z  = (camera->getPosition().z+j) * terrainSize;
+                z /= terrainSize;
+                z += terrainSize/2;
+
+                terrainY += terrain->getPosition(x,z).y + terrain->getHeight(glm::vec2(x,z)) * 69;
+            }
+        }
+
+        terrainY /= 400.f;
+
+
+        glm::vec3 newCamPos(camera->getPosition());
+        newCamPos.y = terrainY + 2.0f;
+        camera->setPosition(newCamPos);
+
+    }
+    //SUN MOVE!
+    sun->setDirection(glm::vec3(cos(counter) * 3.0, 1.0, sin(counter)* 3.0));
 
     glm::vec3 intersection;
     glm::vec3 beginPos = camera->getPosition();
-    line3D->setBeginPoint(beginPos);
+    //line3D->setBeginPoint(beginPos);
 
     glm::vec3 endPos = beginPos + camera->getFarPlane() * mouseRay.getCurrRay();
-    line3D->setEndPoint(cursorLight->getLightProperties().position);
+    //line3D->setEndPoint(cursorLight->getLightProperties().position);
 
     collisionHandler.setTerrain(terrain);
     collisionHandler.setRayDirection(mouseRay.getCurrRay());
@@ -303,6 +415,7 @@ void GameState::update(const sf::Time& deltaTime)
         cursorLight->setPosition(cursorLight->getLightProperties().position + height);
     }
 
+    renderer.update(deltaTime);
 
 }
 

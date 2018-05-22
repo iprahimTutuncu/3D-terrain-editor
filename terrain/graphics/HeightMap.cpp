@@ -7,6 +7,7 @@
 #include <math.h>
 #include "SFML/System/Vector3.hpp"
 #include <utility>
+#include <fstream>
 
 HeightMap::HeightMap(std::string path, std::string texPath)
 {
@@ -75,7 +76,7 @@ void HeightMap::reload()
 float HeightMap::getRedColor(int i,int j)
 {
     if(j < 0 || i < 0 || j > this->getSize().y || i > this->getSize().x)
-        return 0;
+        return 0.f;
 
     int uv = i + j * mSize.x;
 
@@ -283,6 +284,33 @@ glm::vec2 HeightMap::getSize()
     return mSize;
 }
 
+void HeightMap::save(const std::string &filePath)
+{
+    FILE* dat = fopen(filePath.c_str(), "wb");
+    fwrite(&data, sizeof(float), 512*512, dat);
+    fclose(dat);
+}
+
+void HeightMap::load(const std::string &filePath)
+{
+    FILE* dat = fopen(filePath.c_str(), "rb");
+
+    if(dat == nullptr)
+        return;
+
+    for(int i = 0; i < 512; i++)
+        for(int j = 0; j < 512; j++){
+            float f;
+            fread(&f, sizeof(float), 1, dat);
+            data[j + i * 512] = f;
+        }
+    fclose(dat);
+
+    glBindTexture(GL_TEXTURE_2D, mTextureID);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, mImage.getSize().x, mImage.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImage.getPixelsPtr());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 512, 512, 0, GL_RED, GL_FLOAT, data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 
 HeightMap::~HeightMap()

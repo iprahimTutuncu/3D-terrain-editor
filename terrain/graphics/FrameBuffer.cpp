@@ -76,6 +76,26 @@ GLuint FrameBuffer::genTextureColorBuffer()
 
 }
 
+GLuint FrameBuffer::genTextureColorBuffer2()
+{
+    GLuint textureColorID;
+    glGenTextures(1, &textureColorID);
+    glBindTexture(GL_TEXTURE_2D, textureColorID);
+    std::cout << "width :" << width << ", height :" << height << std::endl;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorBufferIDs.size(), GL_TEXTURE_2D, textureColorID, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    colorBufferIDs.emplace_back(textureColorID);
+    std::cout << colorBufferIDs.back() << std::endl;
+
+    return textureColorID;
+
+
+}
+
 GLuint FrameBuffer::genTextureDepthShadowBuffer()
 {
     bind();
@@ -84,7 +104,7 @@ GLuint FrameBuffer::genTextureDepthShadowBuffer()
 
     glGenTextures(1, &textureDepthBufferID);
     glBindTexture(GL_TEXTURE_2D, textureDepthBufferID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     //filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -118,26 +138,30 @@ GLuint FrameBuffer::genTextureDepthWaterBuffer()
 
     glGenTextures(1, &textureDepthBufferID);
     glBindTexture(GL_TEXTURE_2D, textureDepthBufferID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     //filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    /*
     //border
     float couleurExtremite[] = { 1.0f, 1.0f, 1.0f, 1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, couleurExtremite);
-
+    */
     //wrapping
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
+
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureDepthBufferID, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
+
+    //glDrawBuffer(GL_NONE);
+    //glReadBuffer(GL_NONE);
+
 
     depthBufferIDs.emplace_back(textureDepthBufferID);
-    std::cout << depthBufferIDs.back() << std::endl;
+    std::cout << "depth ID: " << depthBufferIDs.back() << std::endl;
 
     unBind();
     return textureDepthBufferID;

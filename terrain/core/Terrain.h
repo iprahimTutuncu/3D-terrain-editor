@@ -9,13 +9,15 @@
 struct TextureTerrainData{
     std::shared_ptr<GLuint> textureID_diffuse;
     std::shared_ptr<GLuint> textureID_specular;
+    std::shared_ptr<GLuint> textureID_normal;
 
     short location; // entre 0.0 et 1.0 inclusive
 
-    TextureTerrainData(std::shared_ptr<GLuint> textureID_diffuse, std::shared_ptr<GLuint> textureID_specular, float location)
+    TextureTerrainData(std::shared_ptr<GLuint> textureID_diffuse, std::shared_ptr<GLuint> textureID_specular, std::shared_ptr<GLuint> textureID_normal, float location)
         {
         this->textureID_diffuse = textureID_diffuse;
         this->textureID_specular = textureID_specular;
+        this->textureID_normal = textureID_normal;
         this->location = location;
     }
 };
@@ -29,7 +31,8 @@ class Terrain
         void init(unsigned int gridSize);
         void build();
         void draw(Shader &shader);
-
+        void saveHeightMap(const std::string& path);
+        void loadHeightMap(const std::string& path);
         void loadHeightMap(const std::string& path, const std::string& texPath);
         /**
           height -> 0.f - 1.0f
@@ -52,7 +55,7 @@ class Terrain
         float getHeight(glm::vec2 position);
         float getGridSize();
 
-        void addTerrainTexture(const std::string &path_diffuse, const std::string &path_specular, short location);
+        void addTerrainTexture(const std::string &path_diffuse, const std::string &path_specular, const std::string &path_normal, short location);
         std::vector<std::shared_ptr<GLuint>> getTerrainTextures();
 
     private:

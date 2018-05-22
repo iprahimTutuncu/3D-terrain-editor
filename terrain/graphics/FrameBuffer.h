@@ -15,6 +15,7 @@ class FrameBuffer
 
         void setRenderBuffer(GLenum internalformat);
         GLuint genTextureColorBuffer();
+        GLuint genTextureColorBuffer2();
         GLuint genTextureDepthShadowBuffer();
         GLuint genTextureDepthWaterBuffer();
 

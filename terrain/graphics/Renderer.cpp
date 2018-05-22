@@ -51,25 +51,22 @@ void Renderer::update(const sf::Time& deltaTime)
 {
     shadow.update(*directionalLight, *camera);
 
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, shadow.getDepthTexture());
+    LightProperties dirlight = directionalLight->getLightProperties();
+    glm::mat4 camVPmatrix = camera->getViewProjectionMatrix();
+
+   // glActiveTexture(GL_TEXTURE18);
+   // glBindTexture(GL_TEXTURE_2D, shadow.getDepthTexture());
 
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getID());
 
-    glActiveTexture(GL_TEXTURE5);
-    glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
-
-    glActiveTexture(GL_TEXTURE6);
-    glBindTexture(GL_TEXTURE_2D, terrain->getTextureMapID());
-
     std::vector<std::shared_ptr<GLuint>> terrainTextures = terrain->getTerrainTextures();
     //std::cout << shadow.getFarPlane() << std::endl;
-
+/*
     //LIGHT(MODEL) SHADER UPDATE
     p_shaders["light"]->use();
     p_shaders["light"]->setMat4("viewProj", camera->getViewProjectionMatrix());
-    p_shaders["light"]->setInt("depth_texture", 4);
+    p_shaders["light"]->setInt("depth_texture", 18);
     p_shaders["light"]->setMat4("lightSpaceCoordinate", shadow.getLightViewProjectionMatrix());
     p_shaders["light"]->setVec4("planeClip", glm::vec4(0.f, -1.f, 0.f, 2.f));
     p_shaders["light"]->setInt("skybox", 3);
@@ -77,34 +74,33 @@ void Renderer::update(const sf::Time& deltaTime)
     p_shaders["light"]->addLight(directionalLight->getLightProperties());
     for(auto pl: pointLights)
         p_shaders["light"]->addLight(pl.second->getLightProperties());
+*/
 
     //TERRAIN SHADER UPDATE
     p_shaders["terrain"]->use();
-    p_shaders["terrain"]->setMat4("viewProj", camera->getViewProjectionMatrix());
-    p_shaders["terrain"]->setVec3("lightPosition", directionalLight->getLightProperties().position);
-    p_shaders["terrain"]->setInt("depth_texture", 4);
-    p_shaders["terrain"]->setMat4("lightSpaceCoordinate", shadow.getLightViewProjectionMatrix());
+    p_shaders["terrain"]->setMat4("viewProj", camVPmatrix);
+    p_shaders["terrain"]->setVec3("lightPosition", dirlight.position);
 
-    p_shaders["terrain"]->setInt("heightmap", 5);
-    p_shaders["terrain"]->setInt("texturemap", 6);
+    //p_shaders["terrain"]->setMat4("lightSpaceCoordinate", shadow.getLightViewProjectionMatrix());
+
+
     p_shaders["terrain"]->setFloat("terrainWidth", terrain->getGridSize());
     p_shaders["terrain"]->setInt("num_texture_size", terrainTextures.size());
 
-    p_shaders["terrain"]->addLight(directionalLight->getLightProperties());
+    p_shaders["terrain"]->addLight(dirlight);
 
-    for(auto pl: pointLights)
+    for(auto &pl: pointLights)
         p_shaders["terrain"]->addLight(pl.second->getLightProperties());
 
     //FLAT WITH LIGHT SHADER UPDATE
     p_shaders["flatNoLight"]->use();
-    p_shaders["flatNoLight"]->setMat4("viewProj", camera->getViewProjectionMatrix());
+    p_shaders["flatNoLight"]->setMat4("viewProj", camVPmatrix);
 
     //WATER xD
     p_shaders["water"]->use();
-    p_shaders["water"]->setMat4("viewProj", camera->getViewProjectionMatrix());
-    p_shaders["water"]->setInt("waterReflection", 0);
-    p_shaders["water"]->addLight(directionalLight->getLightProperties());
-
+    p_shaders["water"]->setMat4("viewProj", camVPmatrix);
+    //p_shaders["water"]->setInt("waterReflection", 0);
+    p_shaders["water"]->addLight(dirlight);
 }
 
 void Renderer::addModel(std::string name, std::shared_ptr<Model>model)
@@ -213,7 +209,8 @@ void Renderer::render()
 
     //dessine le terrain et les modeles pour l'eau(ca va être lourd)
     water->bindReflection();
-
+    glClearColor(0.0f, 0.5f, 0.9f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glm::vec3 cameraUnderWaterPosition = camera->getPosition();
     float distance = 2 * (camera->getPosition().y - water->getHeight());
@@ -264,8 +261,9 @@ void Renderer::render()
 
 
     water->bindRefraction();
-    glClearColor(0.0f, 0.3f, 0.2f, 1.0f);
+    glClearColor(0.0f, 0.5f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
     cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix());
 
     glEnable(GL_CLIP_DISTANCE0);
@@ -351,7 +349,7 @@ void Renderer::render()
     //dessine les ecrans
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     postProcess.drawScreen();
-    //GLuint toGUI = water->getReflectionTexture();
+    GLuint toGUI = water->getRefractionDepthTexture();
 
     //shadow.drawScreen(toGUI);
     setRenderMode(this->currRenderMode);

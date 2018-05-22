@@ -67,6 +67,8 @@ void Grid::init(int gridSize, float tileSize)
 
 glm::vec3 Grid::getPosition(int i, int j)
 {
+    if(j < 0 || i < 0 || j > this->gridSize || i > this->gridSize)
+        return glm::vec3(0.f);
     return positions[i * this->gridSize + j];
 }
 

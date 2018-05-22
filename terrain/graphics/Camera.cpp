@@ -27,30 +27,15 @@ void Camera::input_callback(float mouseX, float mouseY)
 
     glm::vec2 mousePos = glm::vec2(mouseX, mouseY);
 
-    if(mousePos.x > width)
-        mousePos.x = width;
-    else if(mousePos.x < 0)
-        mousePos.x = 0;
 
-    if(mousePos.y > height)
-        mousePos.y = height;
-    else if(mousePos.y < 0)
-        mousePos.y = 0;
+
 
     glm::vec2 mouseOffset = glm::vec2(mousePos.x - mouseOldPos.x, mousePos.y - mouseOldPos.y);
     mouseOldPos = glm::vec2(mouseX, mouseY);
 
-    if(mouseOldPos.x > width)
-        mouseOldPos.x = width;
-    else if(mouseOldPos.x < 0)
-        mouseOldPos.x = 0;
 
-    if(mouseOldPos.y > height)
-        mouseOldPos.y = height;
-    else if(mouseOldPos.y < 0)
-        mouseOldPos.y = 0;
 
-    float sensitivity = 0.2;
+    float sensitivity = 0.1;
     mouseOffset *= sensitivity;
 
     yaw += mouseOffset.x;
@@ -68,7 +53,6 @@ void Camera::input_callback(float mouseX, float mouseY)
     view = glm::lookAt(position,
                        position - glm::normalize(front),
                        glm::vec3(0.0f, 1.0f, 0.0f));
-
 
 }
 
@@ -99,6 +83,13 @@ void Camera::move_back()
     float y = position.y;
     position += front * spd;
     //position.y = y;
+}
+
+void Camera::moveSide(float spd)
+{
+    glm::vec3 right(1.0);
+    right = glm::cross(front, getUp());
+    position += right * spd;
 }
 
 void Camera::turn(float speed)

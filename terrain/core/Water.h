@@ -26,6 +26,7 @@ class Water
 
         GLuint getReflectionTexture();
         GLuint getRefractionTexture();
+        GLuint getRefractionDepthTexture();
 
         ~Water();
     private:
@@ -41,6 +42,7 @@ class Water
 
         GLuint reflectionTexID;
         GLuint refractionTexID;
+        GLuint refractionDepthTexID;
 
         float height;
         std::string DUDVpath{"media/texture/waterDUDV.png"};
