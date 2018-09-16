@@ -9,7 +9,6 @@
 #include "../graphics/CubeMap.h"
 #include "../graphics/Material.h"
 #include "../graphics/HeightMap.h"
-#include "../ECS/Systems/RenderSystem.h"
 #include "../graphics/PostProcess.h"
 #include "../graphics/Shadow.h"
 #include "../core/SceneManager.h"
@@ -17,7 +16,6 @@
 #include "../core/MouseRay.h"
 #include "../core/CollisionHandler.h"
 #include "../core/Water.h"
-#include "../vendor/imgui.h"
 
 class GameState : public BaseState
 {

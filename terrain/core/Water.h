@@ -8,7 +8,7 @@
 class Water
 {
     public:
-        Water();
+        Water(int width, int height);
 
         void init(float length);
         void build();
@@ -33,12 +33,6 @@ class Water
         Grid grid;
         FrameBuffer reflectionFBO;
         FrameBuffer refractionFBO;
-
-        const int REFLECTION_WIDTH{800};
-        const int REFLECTION_HEIGHT{600};
-
-        const int REFRACTION_WIDTH{800};
-        const int REFRACTION_HEIGHT{600};
 
         GLuint reflectionTexID;
         GLuint refractionTexID;

@@ -37,7 +37,6 @@
 					<Add option="-O2" />
 					<Add option="-std=c++14" />
 					<Add directory="scenes" />
-					<Add directory="ECS/Systems" />
 					<Add directory="ressourceManager" />
 					<Add directory="graphics" />
 					<Add directory="core" />
@@ -50,9 +49,9 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-std=c++14" />
+			<Add option="-std=c++11" />
 		</Compiler>
 		<Linker>
 			<Add library="GL" />
@@ -135,15 +134,6 @@
 		<Unit filename="states/GameState.h" />
 		<Unit filename="states/MainMenuState.cpp" />
 		<Unit filename="states/MainMenuState.h" />
-		<Unit filename="vendor/imconfig.h" />
-		<Unit filename="vendor/imgui.cpp" />
-		<Unit filename="vendor/imgui.h" />
-		<Unit filename="vendor/imgui_demo.cpp" />
-		<Unit filename="vendor/imgui_draw.cpp" />
-		<Unit filename="vendor/imgui_internal.h" />
-		<Unit filename="vendor/stb_rect_pack.h" />
-		<Unit filename="vendor/stb_textedit.h" />
-		<Unit filename="vendor/stb_truetype.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />

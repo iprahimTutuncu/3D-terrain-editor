@@ -231,6 +231,13 @@ void Shadow::drawShadow(Model& model, glm::mat4 modelTransform)
     model.Draw(*p_shaderShadowMap);
 }
 
+void Shadow::drawShadow(Terrain& terrain, glm::mat4 modelTransform)
+{
+    p_shaderShadowMap->use();
+    p_shaderShadowMap->setMat4("model", modelTransform);
+    terrain.draw(*p_shaderShadowMap);
+}
+
 Shadow::~Shadow()
 {
     glDeleteBuffers(1, &quadVBO);

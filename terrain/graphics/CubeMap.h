@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../ressourceManager/ShaderManager.h"
+#include "light/DirectionalLight.h"
 
 enum class FACE {RIGHT, LEFT ,TOP , BOTTOM, BACK, FRONT};
 
@@ -11,7 +12,7 @@ class CubeMap
     public:
         CubeMap();
         void setFace(FACE face, std::string fileName);
-        void draw(glm::mat4 cameraProjection, glm::mat4 cameraView);
+        void draw(glm::mat4 cameraProjection, glm::mat4 cameraView, DirectionalLight &light);
         GLuint getID();
 
     private:

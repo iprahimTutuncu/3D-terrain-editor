@@ -21,6 +21,9 @@ uniform mat4 modelView;
 uniform mat4 viewProj;
 uniform mat4 lightSpaceCoordinate;
 
+uniform vec4 planeClip;
+
+
 void main()
 {
     /*
@@ -35,11 +38,14 @@ void main()
     vs_out.TangentViewPos  = TBN * viewPos;
     vs_out.TangentFragPos  = TBN * vs_out.FragPos;
 */
+    vec4 worldPosition = model*vec4(position, 1.0f);
 
-    outVertex.position = (model*vec4(position, 1.0f)).xyz;
+    outVertex.position = worldPosition.xyz;
     outVertex.normal   = mat3(transpose(inverse(model))) * normal;
     outVertex.texel    = texel;
     outVertex.shadowCoord = lightSpaceCoordinate * vec4(outVertex.position, 1.0);
+
+    gl_ClipDistance[0] = dot(worldPosition, planeClip);
 
     gl_Position = viewProj * model * vec4(position, 1.0f);
 }

@@ -20,7 +20,7 @@ Game::Game():
     glewExperimental = GL_TRUE;
     glewInit();
 
-   // this->states.push(new MainMenuState(this));
+   //this->states.push(new MainMenuState(this));
    this->states.push(new GameState(this));
 }
 

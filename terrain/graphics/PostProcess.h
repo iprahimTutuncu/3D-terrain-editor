@@ -21,10 +21,13 @@ class PostProcess
 
         bool init();
 
+        void update(glm::mat4 viewProj);
+
         void beginDraw();
         void endDraw();
         void drawScreen();
 
+        GLuint getDepth();
         void setPostProcessMode(PostProcessMode postProcessMode);
 
     private:

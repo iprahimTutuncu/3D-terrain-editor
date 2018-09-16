@@ -1,11 +1,10 @@
 #include "Water.h"
 #include "../ressourceManager/TextureManager.h"
-Water::Water():
-    reflectionFBO(800, 600),
-    refractionFBO(800, 600),
+Water::Water(int width,int height):
+    reflectionFBO(width, height),
+    refractionFBO(width, height),
     height(0)
 {
-    std::cout << "local width: " << REFLECTION_WIDTH << std::endl;
     init(20.f);
 }
 
@@ -31,19 +30,6 @@ void Water::init(float length)
         std::cout << "reflecitonFBO, ready to use!" << std::endl;
 
     reflectionFBO.unBind();
-
-    //GENERATION DE LA TEXTURE DE LA REFRACTION
-    /*
-    refractionFBO.init();
-    refractionFBO.bind();
-
-    refractionTexID = refractionFBO.genTextureColorBuffer();
-    refractionFBO.setRenderBuffer(GL_DEPTH24_STENCIL8);
-    if(refractionFBO.isUsable())
-        std::cout << "refractionFBO ready to use!" << std::endl;
-
-    refractionFBO.unBind();
-    */
 
     refractionFBO.init();
     refractionFBO.bind();

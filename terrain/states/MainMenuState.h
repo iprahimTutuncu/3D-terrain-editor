@@ -1,8 +1,7 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
-#include <TGUI/TGUI.hpp>
-
+#include "SFML/Graphics.hpp"
 #include "BaseState.h"
 
 class MainMenuState : public BaseState

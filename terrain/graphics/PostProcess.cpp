@@ -15,11 +15,17 @@ PostProcess::~PostProcess()
 bool PostProcess::init()
 {
     fbo.init();
-    fbo.genTextureColorBuffer();
+
     fbo.setRenderBuffer(GL_DEPTH24_STENCIL8);
+    fbo.genTextureColorBuffer();
+    fbo.genTextureDepthWaterBuffer();
+
     if(!fbo.isUsable())
         return false;
 
+    fbo.unBind();
+
+    std::cout << "Post Processing is usable!" << std::endl;
     float quadVertices[] = { //un ecran normalizer
         // positions   // texCoords
         -1.0f,  1.0f,  0.0f, 1.0f,
@@ -45,13 +51,19 @@ bool PostProcess::init()
 
     p_shader = RessourceManager::ShaderManager::get("media/shader/postProcess/postProcess.vert", "media/shader/postProcess/postProcess.frag");
     p_shader->use();
-    p_shader->setInt("screenTexture", 0);
+
 
     for(std::string su: shaderUniform)
         p_shader->setBool(su, false);
 
     return true;
 }
+
+void PostProcess::update(glm::mat4 viewProj)
+{
+    p_shader->setMat4("VPmatrix", viewProj);
+}
+
 
 void PostProcess::beginDraw()
 {
@@ -72,11 +84,25 @@ void PostProcess::drawScreen()
     glBindVertexArray(quadVAO);
     p_shader->use();
     glDisable(GL_DEPTH_TEST);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fbo.getTextureColorBuffer(0));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, fbo.getTextureDepthBuffer(0));
+
+    p_shader->setInt("screenTexture", 0);
+    p_shader->setInt("depthScreenTexture", 1);
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_FRAMEBUFFER_SRGB);
 }
+
+GLuint PostProcess::getDepth()
+{
+    return fbo.getTextureDepthBuffer(0);
+}
+
 
 void PostProcess::setPostProcessMode(PostProcessMode postProcessMode)
 {

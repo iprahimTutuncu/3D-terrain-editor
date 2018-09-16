@@ -92,12 +92,13 @@ void CubeMap::setFace(FACE face, std::string fileName)
         std::cout << "Cubemap failed to load, " << fileName << " doesn't existe" << std::endl;
 }
 
-void CubeMap::draw(glm::mat4 cameraProjection, glm::mat4 cameraView)
+void CubeMap::draw(glm::mat4 cameraProjection, glm::mat4 cameraView, DirectionalLight &light)
 {
     p_shader->use();
     p_shader->setMat4("proj", cameraProjection);
     glm::mat4 view = glm::mat4(glm::mat3(cameraView));
     p_shader->setMat4("view", view);
+    p_shader->addLight(light.getLightProperties());
     glDepthFunc(GL_LEQUAL);
 
     glBindVertexArray(VAO);

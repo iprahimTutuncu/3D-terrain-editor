@@ -18,6 +18,8 @@ string readFile(const char* fileName){
 
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 {
+
+    std::cout << "yo! did you got here!?" << std::endl;
     GLuint vertexShader;
     GLuint fragShader;
     GLint success;

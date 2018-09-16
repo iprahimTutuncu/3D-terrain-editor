@@ -19,8 +19,6 @@ void Renderer::init()
 
     if(!shadow.init())
         std::cout << "Error: failed to init shadow" << std::endl;
-    if(!postProcess.init())
-        std::cout << "Error: failed to init postProcess" << std::endl;
 
     //Initialisation des shaders
     //possiblement mettre cela dans un fichier txt.
@@ -101,6 +99,8 @@ void Renderer::update(const sf::Time& deltaTime)
     p_shaders["water"]->setMat4("viewProj", camVPmatrix);
     //p_shaders["water"]->setInt("waterReflection", 0);
     p_shaders["water"]->addLight(dirlight);
+
+    postProcess.update(camera->getViewProjectionMatrix());
 }
 
 void Renderer::addModel(std::string name, std::shared_ptr<Model>model)
@@ -200,11 +200,13 @@ void Renderer::setWater(std::shared_ptr<Water>water)
 
 void Renderer::render()
 {
-    //dessine l'ombre des models
+    //dessine l'ombre des models non utiliser pour le projet synthese.
+    //Assez fonctionnel.
     shadow.beginDraw();
-    for(auto m: models)
-        shadow.drawShadow(*m.second, m.second->getWorldTransform());
-    //shadow.drawShadow(*terrain, terrain->getWorldTransform())
+    for(auto m: models){
+        //shadow.drawShadow(*m.second, m.second->getWorldTransform());
+        //shadow.drawShadow(*terrain, terrain->getWorldTransform());
+    }
     shadow.endDraw();
 
     //dessine le terrain et les modeles pour l'eau(ca va être lourd)
@@ -222,7 +224,7 @@ void Renderer::render()
 
     glClearColor(0.0f, 0.3f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix());
+    cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix(), *directionalLight);
 
     glEnable(GL_CLIP_DISTANCE0);
 
@@ -264,7 +266,7 @@ void Renderer::render()
     glClearColor(0.0f, 0.5f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix());
+    cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix(), *directionalLight);
 
     glEnable(GL_CLIP_DISTANCE0);
 
@@ -299,7 +301,7 @@ void Renderer::render()
 
     glClearColor(0.0f, 0.5f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix());
+    cubeMap.draw(camera->getProjectionMatrix(), camera->getViewMatrix(), *directionalLight);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     for(auto g: grids){
@@ -349,7 +351,7 @@ void Renderer::render()
     //dessine les ecrans
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     postProcess.drawScreen();
-    GLuint toGUI = water->getRefractionDepthTexture();
+    GLuint toGUI = postProcess.getDepth();
 
     //shadow.drawScreen(toGUI);
     setRenderMode(this->currRenderMode);

@@ -17,6 +17,7 @@ struct LightProperties{
     bool isEnable;
     bool isDirection;
     bool isPoint;
+    bool isCursor;
 
     vec3 position;
     vec3 direction;

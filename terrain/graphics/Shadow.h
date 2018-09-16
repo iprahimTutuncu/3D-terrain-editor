@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Grid.h"
+#include "../core/Terrain.h"
 
 #include "glm/mat4x4.hpp"
 #include "glm/gtx/projection.hpp"
@@ -26,6 +27,7 @@ class Shadow
         void update(DirectionalLight& dl, Camera& cam);
 
         void drawShadow(Model& model, glm::mat4 modelTransform);
+        void drawShadow(Terrain& terrain, glm::mat4 modelTransform);
 
         void setDirectionalLight(DirectionalLight& light);
         void setCamera(Camera& camera);

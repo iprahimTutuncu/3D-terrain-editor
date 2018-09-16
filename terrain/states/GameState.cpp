@@ -19,12 +19,15 @@ GameState::GameState(Game* parent)
     terrain->addTerrainTexture("media/texture/terrain/jungle_stone_d.jpg", "media/texture/terrain/jungle_stone_s.jpg", "media/texture/terrain/jungle_stone_n.jpg", 1);
     terrain->addTerrainTexture("media/texture/terrain/desert_sand_d.jpg", "media/texture/terrain/desert_sand_s.jpg" , "media/texture/terrain/desert_sand_n.jpg", 3);
 
-    water = std::make_shared<Water>();
+    water = std::make_shared<Water>(parent->getWidth(), parent->getHeight());
     water->setHeight(5.0f);
     sceneManager.init(parent->getWidth(), parent->getHeight());
 
     sun = sceneManager.makeDirectionalLight();
     sun->setDirection(glm::vec3(1.0,0.1,0.3));
+    sun->setAmbientColor(glm::vec3(0.1, 0.1,0.2));
+    sun->setDiffuseColor(glm::vec3(0.5,0.3,0.0));
+    sun->setSpecularColor(glm::vec3(0.7,0.7,0.3));
     sun->enable(true);
     camera = sceneManager.getCamera();
     camera->setPosition(glm::vec3(0.0, 2.0, 0.0));
@@ -98,21 +101,34 @@ void GameState::event()
             parent->getWindow().close();
             exit(0);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)){
             parent->getWindow().close();
             exit(0);
         }
         if(event.type == sf::Event::MouseWheelMoved){
-            float multY = 1.0;
+            //ELEVATION SPEED
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
+                if(event.mouseWheel.delta == 1)
+                    elevationRadiusScale += 0.1f;
+                else if(event.mouseWheel.delta == -1)
+                    elevationRadiusScale -= 0.1f;
 
-            if(event.mouseWheel.delta == 1)
-                multY = 1.1;
-            else if(event.mouseWheel.delta == -1)
-                multY = 0.9;
+                if (elevationRadiusScale > 10.f)
+                    elevationRadiusScale = 10.f;
+                else if(elevationRadiusScale < 0.1f)
+                    elevationRadiusScale  = 0.1f;
+            }else{
+                float multY = 1.0;
 
-            cursorLight->setAttenuation(1.0,
-                                        cursorLight->getLightProperties().attenuationLinear * multY,
-                                        cursorLight->getLightProperties().attenuationQuadratic * multY);
+                if(event.mouseWheel.delta == 1)
+                    multY = 1.1;
+                else if(event.mouseWheel.delta == -1)
+                    multY = 0.9;
+
+                cursorLight->setAttenuation(1.0,
+                                            cursorLight->getLightProperties().attenuationLinear * multY,
+                                            cursorLight->getLightProperties().attenuationQuadratic * multY);
+                }
         }
     }
 
@@ -136,34 +152,34 @@ void GameState::event()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)){
-                terrain->saveHeightMap("heightmap0.txt");
+                terrain->saveHeightMap("heightmap0.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)){
-                terrain->saveHeightMap("heightmap1.txt");
+                terrain->saveHeightMap("heightmap1.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)){
-                terrain->saveHeightMap("heightmap2.txt");
+                terrain->saveHeightMap("heightmap2.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)){
-                terrain->saveHeightMap("heightmap3.txt");
+                terrain->saveHeightMap("heightmap3.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)){
-                terrain->saveHeightMap("heightmap4.txt");
+                terrain->saveHeightMap("heightmap4.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)){
-                terrain->saveHeightMap("heightmap5.txt");
+                terrain->saveHeightMap("heightmap5.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)){
-                terrain->saveHeightMap("heightmap6.txt");
+                terrain->saveHeightMap("heightmap6.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)){
-                terrain->saveHeightMap("heightmap7.txt");
+                terrain->saveHeightMap("heightmap7.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)){
-                terrain->saveHeightMap("heightmap8.txt");
+                terrain->saveHeightMap("heightmap8.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)){
-                terrain->saveHeightMap("heightmap9.txt");
+                terrain->saveHeightMap("heightmap9.terrain");
             }else{
                 std::cout << "Not a valid input for saving" << std::endl;
             }
@@ -180,34 +196,34 @@ void GameState::event()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)){
-                terrain->loadHeightMap("heightmap0.txt");
+                terrain->loadHeightMap("heightmap0.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)){
-                terrain->loadHeightMap("heightmap1.txt");
+                terrain->loadHeightMap("heightmap1.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)){
-                terrain->loadHeightMap("heightmap2.txt");
+                terrain->loadHeightMap("heightmap2.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)){
-                terrain->loadHeightMap("heightmap3.txt");
+                terrain->loadHeightMap("heightmap3.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)){
-                terrain->loadHeightMap("heightmap4.txt");
+                terrain->loadHeightMap("heightmap4.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)){
-                terrain->loadHeightMap("heightmap5.txt");
+                terrain->loadHeightMap("heightmap5.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)){
-                terrain->loadHeightMap("heightmap6.txt");
+                terrain->loadHeightMap("heightmap6.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)){
-                terrain->loadHeightMap("heightmap7.txt");
+                terrain->loadHeightMap("heightmap7.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)){
-                terrain->loadHeightMap("heightmap8.txt");
+                terrain->loadHeightMap("heightmap8.terrain");
             }
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)){
-                terrain->loadHeightMap("heightmap9.txt");
+                terrain->loadHeightMap("heightmap9.terrain");
             }else{
                 std::cout << "Not a valid input for loading" << std::endl;
             }
@@ -311,24 +327,6 @@ void GameState::event()
         //cursorLight->setSpecularColor(cursorLight->getLightProperties().specular + );
     }
 
-        //ELEVATION SPEED
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-            elevationRadiusScale += 0.1f;
-        }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-            elevationRadiusScale -= 0.1f;
-        }
-
-        if (elevationRadiusScale > 10.f)
-            elevationRadiusScale = 10.f;
-        else if(elevationRadiusScale < 0.1f)
-            elevationRadiusScale  = 0.1f;
-
-
-        //
-        //cursorLight->setSpecularColor(cursorLight->getLightProperties().specular + );
-    }
 
     glm::vec3 newAmbient(elevationScale, 0.f, elevationRadiusScale*0.618033f);
     cursorLight->setAmbientColor(newAmbient);
@@ -341,6 +339,7 @@ void GameState::event()
 
 void GameState::update(const sf::Time& deltaTime)
 {
+    terrain->addCircle(0, 1, 1,cursorLight->getLightProperties().attenuationLinear, cursorLight->getLightProperties().attenuationQuadratic, 10.f);
 
     std::cout << 1 / deltaTime.asSeconds() << std::endl;
     static float average = 0;
@@ -379,16 +378,17 @@ void GameState::update(const sf::Time& deltaTime)
         newCamPos.y = terrainY + 2.0f;
         camera->setPosition(newCamPos);
 
+        float mousex = sf::Mouse::getPosition(parent->getWindow()).x;
+        float mousey = sf::Mouse::getPosition(parent->getWindow()).y;
+        camera->input_callback(mousex, mousey);
+
     }
     //SUN MOVE!
     sun->setDirection(glm::vec3(cos(counter) * 3.0, 1.0, sin(counter)* 3.0));
 
     glm::vec3 intersection;
     glm::vec3 beginPos = camera->getPosition();
-    //line3D->setBeginPoint(beginPos);
-
     glm::vec3 endPos = beginPos + camera->getFarPlane() * mouseRay.getCurrRay();
-    //line3D->setEndPoint(cursorLight->getLightProperties().position);
 
     collisionHandler.setTerrain(terrain);
     collisionHandler.setRayDirection(mouseRay.getCurrRay());
